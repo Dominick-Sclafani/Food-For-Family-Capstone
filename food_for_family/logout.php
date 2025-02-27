@@ -1,6 +1,6 @@
 <?php
 session_start();
-session_destroy();
+session_destroy(); //destroys session to logout user and redirect to the homepage
 header("Location: index.php");
 exit;
 ?>

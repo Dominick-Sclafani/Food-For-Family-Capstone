@@ -1,7 +1,8 @@
 function showForm(type) {
-  let formHTML = "";
+  let formHTML = ""; //empty form string
 
   if (type === "login") {
+    //if login is selected
     formHTML = `
             <form id="login-form">
                 <div class="mb-3">
@@ -15,6 +16,7 @@ function showForm(type) {
                 <button type="submit" class="btn btn-success w-100">Login</button>
             </form>`;
   } else {
+    //if register form is selected
     formHTML = `
             <form id="register-form">
                 <div class="mb-3">
@@ -29,13 +31,14 @@ function showForm(type) {
             </form>`;
   }
 
-  $("#form-container").html(formHTML);
+  $("#form-container").html(formHTML); //insert form into html contianer
 
   $("#login-form, #register-form").on("submit", function (e) {
     e.preventDefault();
-    let formData = $(this).serialize() + `&action=${type}`;
+    let formData = $(this).serialize() + `&action=${type}`; //sets form data to url format
 
     $.post("auth.php", formData, function (response) {
+      //sends asynch request to php
       if (response.trim() === "success") {
         location.reload();
       } else {
