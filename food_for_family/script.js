@@ -34,4 +34,21 @@ function showForm(type) {
   }
 
   $("#form-container").html(formHTML); // Insert form into HTML container
+
+  //meal posting ajax script
+  $(document).on("submit", "#meal-form", function (e) {
+    e.preventDefault(); // Prevent empty form submission
+    let formData = $(this).serialize();
+
+    $.post("post_meal.php", formData, function (response) {
+      response = response.trim(); // Remove whitespace
+
+      if (response === "success") {
+        alert("Meal posted successfully!");
+        location.reload(); // Refresh to show the new meal
+      } else {
+        alert("Error: " + response);
+      }
+    });
+  });
 }
