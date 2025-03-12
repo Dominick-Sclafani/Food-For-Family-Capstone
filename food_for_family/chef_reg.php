@@ -1,6 +1,27 @@
 <?php
 session_start();
-include('db.php'); // Include your DB connection if needed for processing
+include('db.php'); // Connect to the database
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Sanitize inputs
+    $first_name = $conn->real_escape_string($_POST['first_name']);
+    $last_name = $conn->real_escape_string($_POST['last_name']);
+    $email = $conn->real_escape_string($_POST['email']);
+
+    // Insert into Chef_Registration table
+    $sql = "INSERT INTO Chef_Registration (first, last, email) VALUES ('$first_name', '$last_name', '$email')";
+
+    if ($conn->query($sql) === TRUE) {
+        $_SESSION['success'] = "Chef registered successfully!";
+        header("Location: index.php"); // Redirect to homepage
+        exit();
+    } else {
+        $_SESSION['error'] = "Error: " . $conn->error;
+        header("Location: chef_reg.php"); // Redirect back to registration page
+        exit();
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +35,19 @@ include('db.php'); // Include your DB connection if needed for processing
 <body class="bg-light">
     <div class="container mt-5">
         <h2 class="text-center">Register as Chef</h2>
-        <form action="chef_register_handler.php" method="POST">
+
+        <!-- Show Success/Error Messages -->
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger text-center"><?= htmlspecialchars($_SESSION['error']); ?></div>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert alert-success text-center"><?= htmlspecialchars($_SESSION['success']); ?></div>
+            <?php unset($_SESSION['success']); ?>
+        <?php endif; ?>
+
+        <form action="chef_reg.php" method="POST">
             <div class="mb-3">
                 <label for="firstName" class="form-label">First Name</label>
                 <input type="text" name="first_name" id="firstName" class="form-control" required>
@@ -35,3 +68,4 @@ include('db.php'); // Include your DB connection if needed for processing
     </div>
 </body>
 </html>
+
