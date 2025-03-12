@@ -46,14 +46,37 @@ include('db.php');
                 </div>
             </div>
         </div>
-        <!--placeholder for where posts will go-->
-        <div class="position-relative p-5 text-center text-muted bg-body border border-dashed rounded-5 col-12">
-            <h1 class="text-body-emphasis">Sorry for the wait!</h1>
-            <p class="col-lg-6 mx-auto mb-4">
-                We are working diligently to get our Webapp in your hands! Thank you for the patience.
-            </p>
         </div>
     <?php endif; ?>
+    <?php if (isset($_SESSION["username"])): ?>
+        <div class="container mt-4">
+            <h2>Post a Meal</h2>
+            <form id="meal-form" method="POST" action="post_meal.php">
+                <div class="mb-3">
+                    <label class="form-label">Meal Title</label>
+                    <input type="text" class="form-control" name="title" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ingredients</label>
+                    <textarea class="form-control" name="ingredients" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Allergies</label>
+                    <input type="text" class="form-control" name="allergies" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Pickup Location</label>
+                    <input type="text" class="form-control" name="pickup_location" required>
+                </div>
+                <button type="submit" class="btn btn-success">Post Meal</button>
+            </form>
+        </div>
+    <?php endif; ?>
+
     <!--Proper error handling putting in through the html-->
     <?php if (isset($_SESSION["error"])): ?>
         <div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
