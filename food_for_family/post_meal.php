@@ -2,8 +2,8 @@
 session_start();
 require "db.php";
 
-if (!isset($_SESSION["username"])) {
-    $_SESSION["error"] = "You must be logged in to post a meal.";
+if (!isset($_SESSION["username"]) || $_SESSION["role"] !== "chef") {
+    $_SESSION["error"] = "Only registered chefs can post meals.";
     header("Location: index.php");
     exit;
 }
