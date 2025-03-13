@@ -77,7 +77,6 @@ include('db.php');
                             </div>
                             <!--hidden to default to regular user and prevent js errors-->
                             <input type="hidden" name="role" value="regular">
-
                             <button type="submit" class="btn btn-primary w-100">Register</button>
                         </form>
                     </div>
@@ -134,13 +133,7 @@ include('db.php');
         </div>
     </div>
 
-    <script>
-        function toggleForm(type) {
-            document.getElementById("login-form-container").style.display = (type === "login") ? "block" : "none";
-            document.getElementById("register-form-container").style.display = (type === "register") ? "block" : "none";
-        }
-    </script>
-
+    <script src="script.js"></script>
 </body>
 
 </html>
