@@ -6,7 +6,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $action = $_POST["action"];
     $username = trim($_POST["username"]);
     $password = trim($_POST["password"]);
-    $role = ($_POST["role"] === "chef") ? "chef" : "regular"; //whether or not user is chef or regular
+
+    // Ensure 'role' key exists in POST request
+    $role = isset($_POST["role"]) && $_POST["role"] === "chef" ? "chef" : "regular";
 
     if ($action == "register") {
         // Check if username already exists
@@ -17,14 +19,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($stmt->num_rows > 0) {
             $_SESSION["error"] = "Username already exists. Please choose another.";
-            header("Location: index.php"); // Redirect user back to display the error message
+            header("Location: index.php");
             exit;
         }
         $stmt->close();
 
-        // Insert new user with hashed password
+        // Insert new user with hashed password and role
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+        $stmt = $conn->prepare("INSERT INTO users (username, password, role) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $username, $hashed_password, $role);
 
         if ($stmt->execute()) {
@@ -32,18 +34,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $_SESSION["error"] = "Registration failed. Please try again.";
         }
+        $stmt->close();
         header("Location: index.php");
         exit;
     }
 
     if ($action == "login") {
-        $stmt = $conn->prepare("SELECT password FROM users WHERE username=?");
+        $stmt = $conn->prepare("SELECT id, password, role FROM users WHERE username=?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->store_result();
+
+        // Fix: Ensure correct number of bind variables
         $stmt->bind_result($user_id, $hashed_password, $role);
         $stmt->fetch();
-        //verify password and decrypt hash
+
         if ($stmt->num_rows > 0 && password_verify($password, $hashed_password)) {
             $_SESSION["username"] = $username;
             $_SESSION["user_id"] = $user_id;
@@ -52,6 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $_SESSION["error"] = "Invalid username or password.";
         }
+        $stmt->close();
         header("Location: index.php");
         exit;
     }

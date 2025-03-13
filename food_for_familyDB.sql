@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users  (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     Account_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ENUM('regular', 'chef') NOT NULL DEFAULT 'regular';
+    role ENUM('regular', 'chef') NOT NULL DEFAULT 'regular'
 );
 
 CREATE TABLE IF NOT EXISTS meals (
@@ -23,3 +23,4 @@ CREATE TABLE IF NOT EXISTS meals (
     FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
     
 );
+--ALTER TABLE users ADD COLUMN role ENUM('regular', 'chef') NOT NULL DEFAULT 'regular';
