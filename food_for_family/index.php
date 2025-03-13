@@ -128,6 +128,39 @@ include('db.php');
                             </form>
                         </div>
                     <?php endif; ?>
+                    <!-- Available meal-->
+
+
+                    <div class="container mt-5">
+                        <h2>Available Meals</h2>
+                        <div class="row">
+                            <?php
+                            $result = $conn->query("SELECT id, title, username, timestamp FROM meals ORDER BY timestamp DESC");
+
+                            if ($result->num_rows > 0):
+                                while ($row = $result->fetch_assoc()): ?>
+                                    <div class="col-md-4 mb-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <a href="meal_details.php?id=<?= $row['id']; ?>" class="text-decoration-none">
+                                                        <?= htmlspecialchars($row["title"]); ?>
+                                                    </a>
+                                                </h5>
+                                                <p class="card-text"><strong>Posted by:</strong>
+                                                    <?= htmlspecialchars($row["username"]); ?></p>
+                                                <p class="card-text"><small class="text-muted">Posted on
+                                                        <?= $row["timestamp"]; ?></small></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endwhile;
+                            else: ?>
+                                <p>No meals available yet.</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
                 <?php endif; ?>
             </div>
         </div>
