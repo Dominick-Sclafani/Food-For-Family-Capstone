@@ -42,7 +42,6 @@ include('db.php');
         </div>
     </div>
 
-
     <div class="container mt-5">
         <div class="row">
             <div class="col">
@@ -53,26 +52,24 @@ include('db.php');
                             <button class="btn btn-primary w-50" onclick="showForm('login')">Login</button>
                             <button class="btn btn-secondary w-50" onclick="showForm('register')">Register</button>
                         </div>
-                        <div id="form-container">
-
-                        </div>
+                        <div id="form-container"></div>
                     </div>
                 </div>
             <?php else: ?>
                 <!--display the logged in user-->
-                <div class=" container text-center ">
+                <div class="container text-center">
                     <div class="row">
                         <div class="col">
                             <h1>Welcome, <?= htmlspecialchars($_SESSION["username"]); ?>!</h1>
                             <a href="logout.php" class="btn btn-danger">Logout</a>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
         </div>
     <?php endif; ?>
+
     <?php if (isset($_SESSION["username"])): ?>
         <div class="container mt-4">
             <h2>Post a Meal</h2>
@@ -102,9 +99,6 @@ include('db.php');
         </div>
     <?php endif; ?>
 
-
-
-
     <!--- Available meals -->
     <?php if (isset($_SESSION["username"])): ?>
         <div class="container mt-5">
@@ -112,7 +106,6 @@ include('db.php');
             <div class="row">
                 <?php
                 $result = $conn->query("SELECT id, title, username, timestamp FROM meals ORDER BY timestamp DESC");
-
                 if ($result->num_rows > 0):
                     while ($row = $result->fetch_assoc()): ?>
                         <div class="col-md-4 mb-4">
@@ -134,7 +127,6 @@ include('db.php');
                 <?php endif; ?>
             </div>
         </div>
-
     <?php endif; ?>
 
     <script src="script.js"></script>
@@ -144,5 +136,4 @@ include('db.php');
 
 <?php
 $conn->close(); //close db connection
-
 ?>

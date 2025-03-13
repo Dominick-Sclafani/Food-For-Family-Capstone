@@ -6,6 +6,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $action = $_POST["action"];
     $username = trim($_POST["username"]);
     $password = trim($_POST["password"]);
+    $role = ($_POST["role"] === "chef") ? "chef" : "regular"; //whether or not user is chef or regular
 
     if ($action == "register") {
         // Check if username already exists
@@ -24,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Insert new user with hashed password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
-        $stmt->bind_param("ss", $username, $hashed_password);
+        $stmt->bind_param("sss", $username, $hashed_password, $role);
 
         if ($stmt->execute()) {
             $_SESSION["success"] = "Registration successful! You can now log in.";
@@ -40,11 +41,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->store_result();
-        $stmt->bind_result($hashed_password);
+        $stmt->bind_result($user_id, $hashed_password, $role);
         $stmt->fetch();
         //verify password and decrypt hash
         if ($stmt->num_rows > 0 && password_verify($password, $hashed_password)) {
             $_SESSION["username"] = $username;
+            $_SESSION["user_id"] = $user_id;
+            $_SESSION["role"] = $role;
             $_SESSION["success"] = "Login successful! Welcome, $username.";
         } else {
             $_SESSION["error"] = "Invalid username or password.";
