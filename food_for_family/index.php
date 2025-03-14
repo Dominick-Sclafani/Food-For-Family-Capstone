@@ -57,6 +57,7 @@ include('db.php');
                             <div class="mb-3">
                                 <label class="form-label">Password</label>
                                 <input type="password" class="form-control" name="password" required>
+
                             </div>
                             <button type="submit" class="btn btn-success w-100">Login</button>
                         </form>
@@ -74,6 +75,17 @@ include('db.php');
                             <div class="mb-3">
                                 <label class="form-label">Password</label>
                                 <input type="password" class="form-control" name="password" required>
+                                <small id="password-requirements" class="form-text text-muted">
+                                    Password must:
+                                    <ul>
+                                        <li id="length" class="text-danger">Be at least 8 characters long</li>
+                                        <li id="uppercase" class="text-danger">Contain at least one uppercase letter</li>
+                                        <li id="lowercase" class="text-danger">Contain at least one lowercase letter</li>
+                                        <li id="number" class="text-danger">Contain at least one number</li>
+                                    </ul>
+                                </small>
+                                <small id="password-error" class="text-danger" style="display: none;">Password does not meet
+                                    the requirements.</small>
                             </div>
                             <!--hidden to default to regular user and prevent js errors-->
                             <input type="hidden" name="role" value="regular">
