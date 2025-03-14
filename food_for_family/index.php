@@ -100,10 +100,10 @@ include('db.php');
                     <?php endif; ?>
 
                     <!-- Meal Posting Section (Only for registered chefs) -->
-                    <?php if ($_SESSION["role"] === "chef"): ?>
+                    <?php if (isset($_SESSION["username"]) && $_SESSION["role"] === "chef"): ?>
                         <div class="container mt-4">
                             <h2>Post a Meal</h2>
-                            <form id="meal-form" method="POST" action="post_meal.php">
+                            <form id="meal-form" method="POST" action="post_meal.php" enctype="multipart/form-data">
                                 <div class="mb-3">
                                     <label class="form-label">Meal Title</label>
                                     <input type="text" class="form-control" name="title" required>
@@ -124,23 +124,30 @@ include('db.php');
                                     <label class="form-label">Pickup Location</label>
                                     <input type="text" class="form-control" name="pickup_location" required>
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Upload Meal Image</label>
+                                    <input type="file" class="form-control" name="meal_image" accept="image/*">
+                                </div>
                                 <button type="submit" class="btn btn-success">Post Meal</button>
                             </form>
                         </div>
                     <?php endif; ?>
+
                     <!-- Available meal-->
-
-
                     <div class="container mt-5">
                         <h2>Available Meals</h2>
                         <div class="row">
                             <?php
-                            $result = $conn->query("SELECT id, title, username, timestamp FROM meals ORDER BY timestamp DESC");
+                            $result = $conn->query("SELECT id, title, username, image, timestamp FROM meals ORDER BY timestamp DESC");
 
                             if ($result->num_rows > 0):
                                 while ($row = $result->fetch_assoc()): ?>
                                     <div class="col-md-4 mb-4">
                                         <div class="card">
+                                            <?php if (!empty($row["image"])): ?>
+                                                <img src="uploads/<?= htmlspecialchars($row["image"]); ?>" class="card-img-top"
+                                                    alt="Meal Image">
+                                            <?php endif; ?>
                                             <div class="card-body">
                                                 <h5 class="card-title">
                                                     <a href="meal_details.php?id=<?= $row['id']; ?>" class="text-decoration-none">
@@ -158,15 +165,13 @@ include('db.php');
                             else: ?>
                                 <p>No meals available yet.</p>
                             <?php endif; ?>
-                        </div>
+                        <?php endif; ?>
                     </div>
+                </div>
 
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
 
-    <script src="script.js"></script>
+
+                <script src="script.js"></script>
 </body>
 
 </html>

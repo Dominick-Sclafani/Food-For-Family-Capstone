@@ -39,6 +39,15 @@ $stmt->close();
 <body class="bg-light">
     <div class="container mt-5">
         <h2><?= htmlspecialchars($meal["title"]); ?></h2>
+
+        <!-- Display the Meal Image -->
+        <?php if (!empty($meal["image"])): ?>
+            <img src="uploads/<?= htmlspecialchars($meal["image"]); ?>" class="img-fluid rounded mb-4" alt="Meal Image"
+                style="max-width: 100%; height: auto;">
+        <?php else: ?>
+            <p class="text-muted">No image available for this meal.</p>
+        <?php endif; ?>
+
         <p><strong>Posted by:</strong> <?= htmlspecialchars($meal["username"]); ?></p>
         <p><strong>Description:</strong> <?= htmlspecialchars($meal["description"]); ?></p>
         <p><strong>Ingredients:</strong> <?= htmlspecialchars($meal["ingredients"]); ?></p>
