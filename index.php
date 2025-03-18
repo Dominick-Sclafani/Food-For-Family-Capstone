@@ -57,6 +57,7 @@ include('db.php');
                             <div class="mb-3">
                                 <label class="form-label">Password</label>
                                 <input type="password" class="form-control" name="password" required>
+
                             </div>
                             <button type="submit" class="btn btn-success w-100">Login</button>
                         </form>
@@ -74,6 +75,17 @@ include('db.php');
                             <div class="mb-3">
                                 <label class="form-label">Password</label>
                                 <input type="password" class="form-control" name="password" required>
+                                <small id="password-requirements" class="form-text text-muted">
+                                    Password must:
+                                    <ul>
+                                        <li id="length" class="text-danger">Be at least 8 characters long</li>
+                                        <li id="uppercase" class="text-danger">Contain at least one uppercase letter</li>
+                                        <li id="lowercase" class="text-danger">Contain at least one lowercase letter</li>
+                                        <li id="number" class="text-danger">Contain at least one number</li>
+                                    </ul>
+                                </small>
+                                <small id="password-error" class="text-danger" style="display: none;">Password does not meet
+                                    the requirements.</small>
                             </div>
                             <!--hidden to default to regular user and prevent js errors-->
                             <input type="hidden" name="role" value="regular">
@@ -100,10 +112,10 @@ include('db.php');
                     <?php endif; ?>
 
                     <!-- Meal Posting Section (Only for registered chefs) -->
-                    <?php if ($_SESSION["role"] === "chef"): ?>
+                    <?php if (isset($_SESSION["username"]) && $_SESSION["role"] === "chef"): ?>
                         <div class="container mt-4">
                             <h2>Post a Meal</h2>
-                            <form id="meal-form" method="POST" action="post_meal.php">
+                            <form id="meal-form" method="POST" action="post_meal.php" enctype="multipart/form-data">
                                 <div class="mb-3">
                                     <label class="form-label">Meal Title</label>
                                     <input type="text" class="form-control" name="title" required>
@@ -124,23 +136,33 @@ include('db.php');
                                     <label class="form-label">Pickup Location</label>
                                     <input type="text" class="form-control" name="pickup_location" required>
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Upload Meal Image</label>
+                                    <input type="file" class="form-control" name="meal_image" accept="image/*">
+                                </div>
                                 <button type="submit" class="btn btn-success">Post Meal</button>
                             </form>
                         </div>
                     <?php endif; ?>
+
                     <!-- Available meal-->
-
-
                     <div class="container mt-5">
-                        <h2>Available Meals</h2>
+                        <h2 class="text-center">Available Meals</h2>
                         <div class="row">
                             <?php
-                            $result = $conn->query("SELECT id, title, username, timestamp FROM meals ORDER BY timestamp DESC");
+                            $result = $conn->query("SELECT id, title, username, image, timestamp FROM meals ORDER BY timestamp DESC");
 
                             if ($result->num_rows > 0):
                                 while ($row = $result->fetch_assoc()): ?>
                                     <div class="col-md-4 mb-4">
-                                        <div class="card">
+                                        <div class="card shadow-lg">
+                                            <?php if (!empty($row["image"])): ?>
+                                                <img src="uploads/<?= htmlspecialchars($row["image"]); ?>" class="card-img-top"
+                                                    alt="Meal Image">
+                                            <?php else: ?>
+                                                <img src="uploads/default-placeholder.png" class="card-img-top"
+                                                    alt="No Image Available">
+                                            <?php endif; ?>
                                             <div class="card-body">
                                                 <h5 class="card-title">
                                                     <a href="meal_details.php?id=<?= $row['id']; ?>" class="text-decoration-none">
@@ -156,17 +178,15 @@ include('db.php');
                                     </div>
                                 <?php endwhile;
                             else: ?>
-                                <p>No meals available yet.</p>
+                                <p class="text-center text-muted">No meals available yet.</p>
                             <?php endif; ?>
-                        </div>
+                        <?php endif; ?>
                     </div>
+                </div>
 
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
 
-    <script src="script.js"></script>
+
+                <script src="script.js"></script>
 </body>
 
 </html>

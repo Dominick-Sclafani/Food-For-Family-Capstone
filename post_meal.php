@@ -9,6 +9,7 @@ if (!isset($_SESSION["username"]) || $_SESSION["role"] !== "chef") {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $user_id = $_SESSION["user_id"];
     $username = $_SESSION["username"];
     $title = trim($_POST["title"]);
     $description = trim($_POST["description"]);
@@ -16,36 +17,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $allergies = trim($_POST["allergies"]);
     $pickup_location = trim($_POST["pickup_location"]);
 
-    // Validate input
-    if (empty($title) || empty($description) || empty($ingredients) || empty($allergies) || empty($pickup_location)) {
-        $_SESSION["error"] = "All fields are required.";
-        header("Location: index.php");
-        exit;
+    $image_filename = null; // Default null if no image is uploaded
+
+    // Handle Image Upload
+    if (!empty($_FILES["meal_image"]["name"])) {
+        $target_dir = "uploads/";
+        $image_filename = basename($_FILES["meal_image"]["name"]);
+        $target_file = $target_dir . time() . "_" . $image_filename; // Unique filename
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        $allowed_types = ["jpg", "jpeg", "png", "gif"];
+
+        if (!in_array($imageFileType, $allowed_types)) {
+            $_SESSION["error"] = "Only JPG, JPEG, PNG, and GIF files are allowed.";
+            header("Location: index.php");
+            exit;
+        }
+
+        if ($_FILES["meal_image"]["size"] > 5000000) { // 5MB limit
+            $_SESSION["error"] = "Image size too large (Max: 5MB).";
+            header("Location: index.php");
+            exit;
+        }
+
+        if (!move_uploaded_file($_FILES["meal_image"]["tmp_name"], $target_file)) {
+            $_SESSION["error"] = "Failed to upload image.";
+            header("Location: index.php");
+            exit;
+        }
+
+        // Store only the filename in the database
+        $image_filename = basename($target_file);
     }
 
-    // Get user_id based on username
-    $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $stmt->store_result();
-    $stmt->bind_result($user_id);
-    $stmt->fetch();
-
-    if (!$stmt->num_rows) {
-        $_SESSION["error"] = "User not found.";
-        header("Location: index.php");
-        exit;
-    }
-    $stmt->close();
-
-    // Insert meal into database
-    $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, ingredients, allergies, pickup_location) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("issssss", $user_id, $username, $title, $description, $ingredients, $allergies, $pickup_location);
+    // Insert meal post into database
+    $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, ingredients, allergies, pickup_location, image) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("isssssss", $user_id, $username, $title, $description, $ingredients, $allergies, $pickup_location, $image_filename);
 
     if ($stmt->execute()) {
         $_SESSION["success"] = "Meal posted successfully!";
     } else {
-        $_SESSION["error"] = "Failed to post meal. Please try again.";
+        $_SESSION["error"] = "Failed to post meal.";
     }
 
     header("Location: index.php");
