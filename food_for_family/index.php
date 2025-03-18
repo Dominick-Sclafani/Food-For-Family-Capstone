@@ -147,7 +147,7 @@ include('db.php');
 
                     <!-- Available meal-->
                     <div class="container mt-5">
-                        <h2>Available Meals</h2>
+                        <h2 class="text-center">Available Meals</h2>
                         <div class="row">
                             <?php
                             $result = $conn->query("SELECT id, title, username, image, timestamp FROM meals ORDER BY timestamp DESC");
@@ -155,10 +155,13 @@ include('db.php');
                             if ($result->num_rows > 0):
                                 while ($row = $result->fetch_assoc()): ?>
                                     <div class="col-md-4 mb-4">
-                                        <div class="card">
+                                        <div class="card shadow-lg">
                                             <?php if (!empty($row["image"])): ?>
                                                 <img src="uploads/<?= htmlspecialchars($row["image"]); ?>" class="card-img-top"
                                                     alt="Meal Image">
+                                            <?php else: ?>
+                                                <img src="uploads/default-placeholder.png" class="card-img-top"
+                                                    alt="No Image Available">
                                             <?php endif; ?>
                                             <div class="card-body">
                                                 <h5 class="card-title">
@@ -175,7 +178,7 @@ include('db.php');
                                     </div>
                                 <?php endwhile;
                             else: ?>
-                                <p>No meals available yet.</p>
+                                <p class="text-center text-muted">No meals available yet.</p>
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>

@@ -24,3 +24,4 @@ CREATE TABLE IF NOT EXISTS meals (
     
 );
 --ALTER TABLE users ADD COLUMN role ENUM('regular', 'chef') NOT NULL DEFAULT 'regular';
+--ALTER TABLE meals ADD COLUMN image VARCHAR(255) NULL;
