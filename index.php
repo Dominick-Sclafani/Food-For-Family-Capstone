@@ -111,39 +111,71 @@ include('db.php');
                         </div>
                     <?php endif; ?>
 
-                    <!-- Meal Posting Section (Only for registered chefs) -->
-                    <?php if (isset($_SESSION["username"]) && $_SESSION["role"] === "chef"): ?>
-                        <div class="container mt-4">
-                            <h2>Post a Meal</h2>
-                            <form id="meal-form" method="POST" action="post_meal.php" enctype="multipart/form-data">
-                                <div class="mb-3">
-                                    <label class="form-label">Meal Title</label>
-                                    <input type="text" class="form-control" name="title" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Description</label>
-                                    <textarea class="form-control" name="description" required></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Ingredients</label>
-                                    <textarea class="form-control" name="ingredients" required></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Allergies</label>
-                                    <input type="text" class="form-control" name="allergies" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Pickup Location</label>
-                                    <input type="text" class="form-control" name="pickup_location" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Upload Meal Image</label>
-                                    <input type="file" class="form-control" name="meal_image" accept="image/*">
-                                </div>
-                                <button type="submit" class="btn btn-success">Post Meal</button>
-                            </form>
-                        </div>
-                    <?php endif; ?>
+<!-- Meal Posting Section (Only for registered chefs) -->
+<?php if (isset($_SESSION["username"]) && $_SESSION["role"] === "chef"): ?>
+    <div class="container mt-4">
+        <h2>Post a Meal</h2>
+        <form id="meal-form" method="POST" action="post_meal.php" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label">Meal Title</label>
+                <input type="text" class="form-control" name="title" required>
+            </div>
+
+            <!-- New Estimated Pickup Time Field -->
+            <div class="mb-3">
+                <label class="form-label">Estimated Time for Pickup</label>
+                <input type="datetime-local" class="form-control" name="pickup_time" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" name="description" required></textarea>
+            </div>
+<!-- Include jQuery & Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+<div class="mb-3">
+    <label class="form-label">Common Allergens</label>
+    <select id="allergens" class="form-control" name="allergens[]" multiple="multiple">
+        <option value="Peanuts">Peanuts</option>
+        <option value="Tree Nuts">Tree Nuts</option>
+        <option value="Dairy">Dairy</option>
+        <option value="Eggs">Eggs</option>
+        <option value="Shellfish">Shellfish</option>
+        <option value="Fish">Fish</option>
+        <option value="Soy">Soy</option>
+        <option value="Wheat">Wheat</option>
+        <option value="Sesame">Sesame</option>
+        <option value="Gluten">Gluten</option>
+    </select>
+</div>
+
+<!-- Initialize Select2 -->
+<script>
+    $(document).ready(function() {
+        $('#allergens').select2({
+            placeholder: "Select allergens...",
+            allowClear: true
+        });
+    });
+</script>
+
+
+            <div class="mb-3">
+                <label class="form-label">Pickup Location</label>
+                <input type="text" class="form-control" name="pickup_location" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Upload Meal Image</label>
+                <input type="file" class="form-control" name="meal_image" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-success">Post Meal</button>
+        </form>
+    </div>
+<?php endif; ?>
+
 
                     <!-- Available meal-->
                     <div class="container mt-5">
