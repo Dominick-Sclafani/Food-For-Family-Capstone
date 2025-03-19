@@ -2,8 +2,37 @@
 session_start();
 require "db.php";
 
+// Check if the user is logged in and is a chef
 if (!isset($_SESSION["username"]) || $_SESSION["role"] !== "chef") {
     $_SESSION["error"] = "Only registered chefs can post meals.";
+    header("Location: index.php");
+    exit;
+}
+
+// Check if chef is verified before allowing meal posting
+$stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
+$stmt->bind_param("i", $_SESSION["user_id"]);
+$stmt->execute();
+$stmt->bind_result($verification_status);
+$stmt->fetch();
+$stmt->close();
+
+if ($verification_status !== "approved") {
+    $_SESSION["error"] = "Your chef account is still pending approval.";
+    header("Location: index.php");
+    exit;
+}
+
+// Check if chef is verified
+$stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
+$stmt->bind_param("i", $_SESSION["user_id"]);
+$stmt->execute();
+$stmt->bind_result($verification_status);
+$stmt->fetch();
+$stmt->close();
+
+if ($verification_status !== "approved") {
+    $_SESSION["error"] = "Your cooks account is still pending verification.";
     header("Location: index.php");
     exit;
 }

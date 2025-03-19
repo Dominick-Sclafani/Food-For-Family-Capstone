@@ -1,13 +1,47 @@
+/* Center content and improve spacing */
 body {
     background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
 }
+
+/* Increase max-width for better content layout */
 .container {
-    max-width: 400px;
+    max-width: 600px;
     padding: 20px;
     background: white;
-    border-radius: 8px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+    margin-top: 20px;
+}
+
+/* Improve button styles */
+.btn {
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 16px;
+}
+
+/* Add hover effect for buttons */
+.btn:hover {
+    opacity: 0.85;
+}
+
+/* Center text for alerts */
+.alert {
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Improve card layout for meals */
+.card {
+    border-radius: 10px;
+    overflow: hidden;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
-.btn-group .btn {
-    border-radius: 0;
+
+/* Meal images should be responsive */
+.card img {
+    width: 100%;
+    height: auto;
+    border-bottom: 2px solid #ddd;
 }

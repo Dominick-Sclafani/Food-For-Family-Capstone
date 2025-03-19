@@ -2,6 +2,7 @@
 session_start(); // Start session to track user login state
 include('db.php');
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,7 +58,6 @@ include('db.php');
                             <div class="mb-3">
                                 <label class="form-label">Password</label>
                                 <input type="password" class="form-control" name="password" required>
-
                             </div>
                             <button type="submit" class="btn btn-success w-100">Login</button>
                         </form>
@@ -75,109 +75,101 @@ include('db.php');
                             <div class="mb-3">
                                 <label class="form-label">Password</label>
                                 <input type="password" class="form-control" name="password" required>
-                                <small id="password-requirements" class="form-text text-muted">
-                                    Password must:
-                                    <ul>
-                                        <li id="length" class="text-danger">Be at least 8 characters long</li>
-                                        <li id="uppercase" class="text-danger">Contain at least one uppercase letter</li>
-                                        <li id="lowercase" class="text-danger">Contain at least one lowercase letter</li>
-                                        <li id="number" class="text-danger">Contain at least one number</li>
-                                    </ul>
-                                </small>
-                                <small id="password-error" class="text-danger" style="display: none;">Password does not meet
-                                    the requirements.</small>
                             </div>
-                            <!--hidden to default to regular user and prevent js errors-->
                             <input type="hidden" name="role" value="regular">
                             <button type="submit" class="btn btn-primary w-100">Register</button>
                         </form>
                     </div>
-
                 <?php else: ?>
-                    <!--  Show Welcome Message for Logged-in Users -->
+                    <!-- Show Welcome Message for Logged-in Users -->
                     <div class="container text-center">
                         <h1>Welcome, <?= htmlspecialchars($_SESSION["username"]); ?>!</h1>
                         <a href="logout.php" class="btn btn-danger">Logout</a>
                     </div>
 
-                    <!--  Chef Registration Button for Regular Users -->
-                    <?php if ($_SESSION["role"] === "regular"): ?>
+
+                    <!-- Chef Registration Form -->
+                    <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === "regular"): ?>
                         <div class="container mt-4 text-center">
                             <h2>Want to Become a Chef?</h2>
-                            <p>Click the button below to apply as a chef and start posting meals.</p>
-                            <form method="POST" action="chef_reg.php">
-                                <button type="submit" class="btn btn-warning">Become a Chef</button>
+                            <p>Complete the form below to apply as a chef. You must be at least 23 years old.</p>
+
+                            <form method="POST" action="chef_reg.php" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="full_name" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Age</label>
+                                    <input type="number" class="form-control" name="age" min="23" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Why do you want to become a chef?</label>
+                                    <textarea class="form-control" name="reason" required></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Upload a Government-Issued ID</label>
+                                    <input type="file" class="form-control" name="id_document" accept=".jpg,.jpeg,.png,.pdf"
+                                        required>
+                                </div>
+
+                                <button type="submit" class="btn btn-warning">Submit Application</button>
                             </form>
                         </div>
                     <?php endif; ?>
 
-<!-- Meal Posting Section (Only for registered chefs) -->
-<?php if (isset($_SESSION["username"]) && $_SESSION["role"] === "chef"): ?>
-    <div class="container mt-4">
-        <h2>Post a Meal</h2>
-        <form id="meal-form" method="POST" action="post_meal.php" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label class="form-label">Meal Title</label>
-                <input type="text" class="form-control" name="title" required>
-            </div>
+                    <!--checks if verified chef-->
+                    <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === "regular"): ?>
+                        <?php
+                        $stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
+                        $stmt->bind_param("i", $_SESSION["user_id"]);
+                        $stmt->execute();
+                        $stmt->bind_result($verification_status);
+                        $stmt->fetch();
+                        $stmt->close();
+                        ?>
 
-            <!-- New Estimated Pickup Time Field -->
-            <div class="mb-3">
-                <label class="form-label">Estimated Time for Pickup</label>
-                <input type="datetime-local" class="form-control" name="pickup_time" required>
-            </div>
+                        <?php if ($verification_status === "pending"): ?>
+                            <p class='text-center' style='color: orange; font-weight: bold;'>Your chef application is pending
+                                approval.</p>
+                        <?php elseif ($verification_status === "approved"): ?>
+                            <p class='text-center' style='color: green; font-weight: bold;'>Your chef account is approved! You can
+                                post meals.</p>
 
-            <div class="mb-3">
-                <label class="form-label">Description</label>
-                <textarea class="form-control" name="description" required></textarea>
-            </div>
-<!-- Include jQuery & Select2 -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+                            <!-- Meal Posting Form -->
+                            <div class="container mt-4">
+                                <h2>Post a Meal</h2>
+                                <form id="meal-form" method="POST" action="post_meal.php" enctype="multipart/form-data">
+                                    <div class="mb-3">
+                                        <label class="form-label">Meal Title</label>
+                                        <input type="text" class="form-control" name="title" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Estimated Time for Pickup</label>
+                                        <input type="datetime-local" class="form-control" name="pickup_time" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control" name="description" required></textarea>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Pickup Location</label>
+                                        <input type="text" class="form-control" name="pickup_location" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Upload Meal Image</label>
+                                        <input type="file" class="form-control" name="meal_image" accept="image/*">
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Post Meal</button>
+                                </form>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
 
-<div class="mb-3">
-    <label class="form-label">Common Allergens</label>
-    <select id="allergens" class="form-control" name="allergens[]" multiple="multiple">
-        <option value="Peanuts">Peanuts</option>
-        <option value="Tree Nuts">Tree Nuts</option>
-        <option value="Dairy">Dairy</option>
-        <option value="Eggs">Eggs</option>
-        <option value="Shellfish">Shellfish</option>
-        <option value="Fish">Fish</option>
-        <option value="Soy">Soy</option>
-        <option value="Wheat">Wheat</option>
-        <option value="Sesame">Sesame</option>
-        <option value="Gluten">Gluten</option>
-    </select>
-</div>
-
-<!-- Initialize Select2 -->
-<script>
-    $(document).ready(function() {
-        $('#allergens').select2({
-            placeholder: "Select allergens...",
-            allowClear: true
-        });
-    });
-</script>
-
-
-            <div class="mb-3">
-                <label class="form-label">Pickup Location</label>
-                <input type="text" class="form-control" name="pickup_location" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Upload Meal Image</label>
-                <input type="file" class="form-control" name="meal_image" accept="image/*">
-            </div>
-            <button type="submit" class="btn btn-success">Post Meal</button>
-        </form>
-    </div>
-<?php endif; ?>
-
-
-                    <!-- Available meal-->
+                    <!-- Available Meals Section (Only for Logged-in Users) -->
                     <div class="container mt-5">
                         <h2 class="text-center">Available Meals</h2>
                         <div class="row">
@@ -212,17 +204,16 @@ include('db.php');
                             else: ?>
                                 <p class="text-center text-muted">No meals available yet.</p>
                             <?php endif; ?>
-                        <?php endif; ?>
+                        </div>
                     </div>
-                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
 
-
-
-                <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
 
-<?php
-$conn->close();
-?>
+<?php $conn->close(); ?>
