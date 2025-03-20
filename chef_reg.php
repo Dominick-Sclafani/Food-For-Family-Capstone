@@ -25,12 +25,6 @@ if ($age < 23) {
 $reason = trim($_POST["reason"]);
 $id_document = null; // Default value
 
-// Ensure the user meets the age requirement
-if ($age < 23) {
-    $_SESSION["error"] = "You must be at least 23 years old to become a chef.";
-    header("Location: index.php");
-    exit;
-}
 
 // Handle ID Document Upload
 if (!empty($_FILES["id_document"]["name"])) {
