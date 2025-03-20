@@ -67,10 +67,10 @@ $result = $conn->query("SELECT id, username FROM users WHERE verification_status
                                     <form method="POST" class="d-inline">
                                         <input type="hidden" name="chef_id" value="<?= $row['id']; ?>">
                                         <button type="submit" name="approve" class="btn btn-success btn-sm">
-                                            ✅ Approve
+                                            Approve
                                         </button>
                                         <button type="submit" name="reject" class="btn btn-danger btn-sm">
-                                            ❌ Reject
+                                            Reject
                                         </button>
                                     </form>
                                 </td>

@@ -60,10 +60,6 @@ if (isset($_SESSION["user_id"])) {
                                 <li><a class="dropdown-item text-danger" href="logout.php">Logout</a></li>
                             </ul>
                         </li>
-                    <?php else: ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="login.php">Login</a>
-                        </li>
                     <?php endif; ?>
                 </ul>
             </div>
@@ -155,55 +151,52 @@ if (isset($_SESSION["user_id"])) {
 
                     <!-- Chef Registration Form -->
                     <?php
-                    if (isset($_SESSION["role"]) && $_SESSION["role"] === "regular") {
-                        // Check the current verification status
-                        $stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
-                        $stmt->bind_param("i", $_SESSION["user_id"]);
-                        $stmt->execute();
-                        $stmt->bind_result($verification_status);
-                        $stmt->fetch();
-                        $stmt->close();
-
-                        // If the user has not applied (NULL), show the application form
-                        if ($verification_status === NULL): ?>
-                            <div class="container mt-4 text-center">
-                                <h2>Want to Become a Chef?</h2>
-                                <p>Complete the form below to apply. You must be at least 23 years old.</p>
-
-                                <form method="POST" action="chef_reg.php" enctype="multipart/form-data">
-                                    <div class="mb-3">
-                                        <label class="form-label">Full Name</label>
-                                        <input type="text" class="form-control" name="full_name" required>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Date of Birth</label>
-                                        <input type="datetime-local" class="form-control" name="dob" id="dob" required>
-                                        <small class="text-danger" id="dob-warning" style="display:none;">You must be at least 23
-                                            years old.</small>
-                                    </div>
 
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Why do you want to become a chef?</label>
-                                        <textarea class="form-control" name="reason" required></textarea>
-                                    </div>
+                    // If the user has not applied (NULL), show the application form
+                    if ($verification_status === NULL): ?>
+                        <div class="container mt-4 text-center">
+                            <h2>Want to post your meals and be a "Home Cook" with us?</h2>
+                            <p>Complete the form below to apply. <small>You must be at least 23 years old to apply.</small></p>
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Upload an ID with Date Of birth</label>
-                                        <input type="file" class="form-control" name="id_document" accept=".jpg,.jpeg,.png,.pdf"
-                                            required>
-                                    </div>
+                            <form method="POST" action="chef_reg.php" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" name="full_name" required>
+                                </div>
 
-                                    <button type="submit" class="btn btn-warning">Submit Application</button>
-                                </form>
-                            </div>
-                        <?php endif;
-                    } ?>
+                                <div class="mb-3">
+                                    <label class="form-label">Date of Birth</label>
+                                    <input type="date" class="form-control" name="dob" id="dob" required>
+                                    <small class="text-danger" id="dob-warning" style="display:none;">You must be at least 23
+                                        years old.</small>
+                                </div>
 
 
-                    <?php if (isset($role) && $role === "chef" && $verification_status === "approved"): ?>
-                        <p class='text-center' style='color: green; font-weight: bold;'>Your chef account is approved! You can
+                                <div class="mb-3">
+                                    <label class="form-label">Why do you want to become a chef?</label>
+                                    <textarea class="form-control" name="reason" required></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Upload an ID with Date Of birth</label>
+                                    <input type="file" class="form-control" name="id_document" accept=".jpg,.jpeg,.png,.pdf"
+                                        required>
+                                </div>
+
+                                <button type="submit" class="btn btn-warning">Submit Application</button>
+                            </form>
+                        </div>
+                    <?php endif;
+                    ?>
+                    <?php if (isset($verification_status) === "rejected"): ?>
+                        <p class="text-center"
+                            stlye="color: red; font-weigt:bold;'> Your Home Cook account was rejected. Please contact an admin if you feel that our decision was incorrerct">
+                        <?php endif ?>
+
+                        <?php if (isset($role) && $role === "chef" && $verification_status === "approved" || $role === "admin"): ?>
+                        <p class='text-center' style='color: green; font-weight: bold;'>Your Home Cook account is approved! You
+                            can
                             post meals.</p>
 
                         <!-- Meal Posting Form -->
