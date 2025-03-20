@@ -28,8 +28,7 @@ CREATE TABLE IF NOT EXISTS meals (
 
 
 
---ALTER TABLE users ADD COLUMN role ENUM('regular', 'chef') NOT NULL DEFAULT 'regular';
 
---ALTER TABLE users MODIFY COLUMN verification_status ENUM('pending', 'approved', 'rejected') DEFAULT NULL;;
+--ALTER TABLE users MODIFY COLUMN verification_status ENUM('pending', 'approved', 'rejected') DEFAULT NULL;
 --ALTER TABLE meals ADD COLUMN image VARCHAR(255) NULL;
 --ALTER TABLE users MODIFY COLUMN role ENUM('regular', 'chef', 'admin') NOT NULL DEFAULT 'regular';
