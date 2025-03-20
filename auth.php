@@ -13,12 +13,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($action == "register") {
         // Password Requirements
         if (
-            strlen($password) < 8 ||
+            strlen($password) < 6 ||
             !preg_match('/[A-Z]/', $password) ||
             !preg_match('/[a-z]/', $password) ||
             !preg_match('/\d/', $password)
         ) {
-            $_SESSION["error"] = "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one number.";
+            $_SESSION["error"] = "Password must be at least 6 characters long and include at least one uppercase letter, one lowercase letter, and one number.";
             header("Location: index.php");
             exit;
         }

@@ -2,8 +2,37 @@
 session_start();
 require "db.php";
 
+// Check if the user is logged in and is a chef
 if (!isset($_SESSION["username"]) || $_SESSION["role"] !== "chef") {
     $_SESSION["error"] = "Only registered chefs can post meals.";
+    header("Location: index.php");
+    exit;
+}
+
+// Check if chef is verified before allowing meal posting
+$stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
+$stmt->bind_param("i", $_SESSION["user_id"]);
+$stmt->execute();
+$stmt->bind_result($verification_status);
+$stmt->fetch();
+$stmt->close();
+
+if ($verification_status !== "approved") {
+    $_SESSION["error"] = "Your chef account is still pending approval.";
+    header("Location: index.php");
+    exit;
+}
+
+// Check if chef is verified
+$stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
+$stmt->bind_param("i", $_SESSION["user_id"]);
+$stmt->execute();
+$stmt->bind_result($verification_status);
+$stmt->fetch();
+$stmt->close();
+
+if ($verification_status !== "approved") {
+    $_SESSION["error"] = "Your cooks account is still pending verification.";
     header("Location: index.php");
     exit;
 }
@@ -13,8 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_SESSION["username"];
     $title = trim($_POST["title"]);
     $description = trim($_POST["description"]);
-    $ingredients = trim($_POST["ingredients"]);
-    $allergies = trim($_POST["allergies"]);
+    $allergies = isset($_POST["allergies"]) ? implode(", ", $_POST["allergies"]) : "None"; //makes sure that it takes the piece from the 
     $pickup_location = trim($_POST["pickup_location"]);
 
     $image_filename = null; // Default null if no image is uploaded
@@ -50,9 +78,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Insert meal post into database
-    $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, ingredients, allergies, pickup_location, image) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("isssssss", $user_id, $username, $title, $description, $ingredients, $allergies, $pickup_location, $image_filename);
+    $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, allergies, pickup_location, image) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("issssss", $user_id, $username, $title, $description, $allergies, $pickup_location, $image_filename);
 
     if ($stmt->execute()) {
         $_SESSION["success"] = "Meal posted successfully!";
