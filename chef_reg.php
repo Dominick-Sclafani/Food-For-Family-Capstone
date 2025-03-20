@@ -10,7 +10,18 @@ if (!isset($_SESSION["username"])) {
 
 $username = $_SESSION["username"];
 $full_name = trim($_POST["full_name"]);
-$age = intval($_POST["age"]);
+$dob = $_POST["dob"];
+$dobDate = new DateTime($dob);
+$today = new DateTime();
+$age = $today->diff($dobDate)->y; // Calculate age
+
+if ($age < 23) {
+    $_SESSION["error"] = "You must be at least 23 years old to become a chef.";
+    header("Location: index.php");
+    exit;
+}
+
+
 $reason = trim($_POST["reason"]);
 $id_document = null; // Default value
 

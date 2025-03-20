@@ -28,6 +28,47 @@ if (isset($_SESSION["user_id"])) {
 </head>
 
 <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.php">Food For Family</a>
+
+            <!-- Toggle Button for Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <?php if (isset($_SESSION["username"])): ?>
+                        <!-- Profile Dropdown -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="uploads/default-profile.png" alt="Profile" width="30" height="30"
+                                    class="rounded-circle">
+                                <?= htmlspecialchars($_SESSION["username"]); ?>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
+                                <?php if ($_SESSION["role"] === "admin"): ?>
+                                    <li><a class="dropdown-item" href="admin_dash.php">Admin Dashboard</a></li>
+                                <?php endif; ?>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item text-danger" href="logout.php">Logout</a></li>
+                            </ul>
+                        </li>
+                    <?php else: ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="login.php">Login</a>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
     <div class="container mt-5">
         <!-- Display Error / Success Messages -->
@@ -87,16 +128,28 @@ if (isset($_SESSION["user_id"])) {
                             <div class="mb-3">
                                 <label class="form-label">Password</label>
                                 <input type="password" class="form-control" name="password" required>
+                                <small id="password-requirements" class="form-text text-muted">
+                                    Password must:
+                                    <ul>
+                                        <li id="length" class="text-danger">Be at least 6 characters long</li>
+                                        <li id="uppercase" class="text-danger">Contain at least one uppercase letter</li>
+                                        <li id="lowercase" class="text-danger">Contain at least one lowercase letter</li>
+                                        <li id="number" class="text-danger">Contain at least one number</li>
+                                    </ul>
+                                </small>
+                                <small id="password-error" class="text-danger" style="display: none;">Password does not meet
+                                    the requirements.</small>
                             </div>
                             <input type="hidden" name="role" value="regular">
                             <button type="submit" class="btn btn-primary w-100">Register</button>
                         </form>
                     </div>
                 <?php else: ?>
+
+
                     <!-- Show Welcome Message for Logged-in Users -->
                     <div class="container text-center">
                         <h1>Welcome, <?= htmlspecialchars($_SESSION["username"]); ?>!</h1>
-                        <a href="logout.php" class="btn btn-danger">Logout</a>
                     </div>
 
 
@@ -124,9 +177,12 @@ if (isset($_SESSION["user_id"])) {
                                     </div>
 
                                     <div class="mb-3">
-                                        <label class="form-label">Age</label>
-                                        <input type="number" class="form-control" name="age" min="23" required>
+                                        <label class="form-label">Date of Birth</label>
+                                        <input type="datetime-local" class="form-control" name="dob" id="dob" required>
+                                        <small class="text-danger" id="dob-warning" style="display:none;">You must be at least 23
+                                            years old.</small>
                                     </div>
+
 
                                     <div class="mb-3">
                                         <label class="form-label">Why do you want to become a chef?</label>
@@ -169,19 +225,59 @@ if (isset($_SESSION["user_id"])) {
 
                                 <!-- Allergen Dropdown -->
                                 <div class="mb-3">
-                                    <label class="form-label">Common Allergies</label>
-                                    <select id="allergies" class="form-control" name="allergies[]" multiple="multiple">
-                                        <option value="Peanuts">Peanuts</option>
-                                        <option value="Tree Nuts">Tree Nuts</option>
-                                        <option value="Dairy">Dairy</option>
-                                        <option value="Eggs">Eggs</option>
-                                        <option value="Shellfish">Shellfish</option>
-                                        <option value="Fish">Fish</option>
-                                        <option value="Soy">Soy</option>
-                                        <option value="Wheat">Wheat</option>
-                                        <option value="Sesame">Sesame</option>
-                                        <option value="Gluten">Gluten</option>
-                                    </select>
+                                    <label class="form-label">Common Allergens</label>
+                                    <div class="d-flex flex-wrap">
+                                        <div class="form-check m-2">
+                                            <input class="form-check-input" type="checkbox" name="allergens[]" value="Peanuts"
+                                                id="peanuts">
+                                            <label class="form-check-label" for="peanuts">Peanuts</label>
+                                        </div>
+                                        <div class="form-check m-2">
+                                            <input class="form-check-input" type="checkbox" name="allergens[]" value="Tree Nuts"
+                                                id="tree-nuts">
+                                            <label class="form-check-label" for="tree-nuts">Tree Nuts</label>
+                                        </div>
+                                        <div class="form-check m-2">
+                                            <input class="form-check-input" type="checkbox" name="allergens[]" value="Dairy"
+                                                id="dairy">
+                                            <label class="form-check-label" for="dairy">Dairy</label>
+                                        </div>
+                                        <div class="form-check m-2">
+                                            <input class="form-check-input" type="checkbox" name="allergens[]" value="Eggs"
+                                                id="eggs">
+                                            <label class="form-check-label" for="eggs">Eggs</label>
+                                        </div>
+                                        <div class="form-check m-2">
+                                            <input class="form-check-input" type="checkbox" name="allergens[]" value="Shellfish"
+                                                id="shellfish">
+                                            <label class="form-check-label" for="shellfish">Shellfish</label>
+                                        </div>
+                                        <div class="form-check m-2">
+                                            <input class="form-check-input" type="checkbox" name="allergens[]" value="Fish"
+                                                id="fish">
+                                            <label class="form-check-label" for="fish">Fish</label>
+                                        </div>
+                                        <div class="form-check m-2">
+                                            <input class="form-check-input" type="checkbox" name="allergens[]" value="Soy"
+                                                id="soy">
+                                            <label class="form-check-label" for="soy">Soy</label>
+                                        </div>
+                                        <div class="form-check m-2">
+                                            <input class="form-check-input" type="checkbox" name="allergens[]" value="Wheat"
+                                                id="wheat">
+                                            <label class="form-check-label" for="wheat">Wheat</label>
+                                        </div>
+                                        <div class="form-check m-2">
+                                            <input class="form-check-input" type="checkbox" name="allergens[]" value="Sesame"
+                                                id="sesame">
+                                            <label class="form-check-label" for="sesame">Sesame</label>
+                                        </div>
+                                        <div class="form-check m-2">
+                                            <input class="form-check-input" type="checkbox" name="allergens[]" value="Gluten"
+                                                id="gluten">
+                                            <label class="form-check-label" for="gluten">Gluten</label>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="mb-3">

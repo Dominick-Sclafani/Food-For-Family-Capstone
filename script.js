@@ -52,3 +52,35 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+  let dobInput = document.getElementById("dob");
+
+  if (dobInput) {
+    dobInput.addEventListener("change", function () {
+      let dobValue = dobInput.value;
+      let dobWarning = document.getElementById("dob-warning");
+
+      if (dobValue) {
+        let dob = new Date(dobValue);
+        let today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        let monthDiff = today.getMonth() - dob.getMonth();
+        let dayDiff = today.getDate() - dob.getDate();
+
+        // Adjust age if birthday hasn't occurred yet this year
+        if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+          age--;
+        }
+
+        if (age < 23) {
+          dobWarning.style.display = "block";
+          dobInput.setCustomValidity("You must be at least 23 years old.");
+        } else {
+          dobWarning.style.display = "none";
+          dobInput.setCustomValidity("");
+        }
+      }
+    });
+  }
+});
