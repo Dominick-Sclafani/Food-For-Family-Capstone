@@ -53,8 +53,9 @@ $stmt->close();
         <p><strong>Posted by:</strong> <?= htmlspecialchars($meal["username"]); ?></p>
         <p><strong>Description:</strong> <?= htmlspecialchars($meal["description"]); ?></p>
         <p><strong>Ingredients:</strong> <?= htmlspecialchars($meal["ingredients"]); ?></p>
-        <p><strong>allergies:</strong>
+        <p><strong>Allergens:</strong>
             <?= !empty($meal["allergies"]) ? htmlspecialchars($meal["allergies"]) : "None"; ?></p>
+
         <p><strong>Pickup Location:</strong> <?= htmlspecialchars($meal["pickup_location"]); ?></p>
         <p><small class="text-muted">Posted on <?= $meal["timestamp"]; ?></small></p>
         <a href="index.php" class="btn btn-primary">Back to Meals</a>
