@@ -2,6 +2,18 @@
 session_start(); // Start session to track user login state
 include('db.php');
 ?>
+<?php
+// Check the current role and verification status for ALL logged-in users
+if (isset($_SESSION["user_id"])) {
+    $stmt = $conn->prepare("SELECT role, verification_status FROM users WHERE id = ?");
+    $stmt->bind_param("i", $_SESSION["user_id"]);
+    $stmt->execute();
+    $stmt->bind_result($role, $verification_status);
+    $stmt->fetch();
+    $stmt->close();
+}
+?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -89,85 +101,102 @@ include('db.php');
 
 
                     <!-- Chef Registration Form -->
-                    <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === "regular"): ?>
-                        <div class="container mt-4 text-center">
-                            <h2>Want to Become a Chef?</h2>
-                            <p>Complete the form below to apply as a chef. You must be at least 23 years old.</p>
-
-                            <form method="POST" action="chef_reg.php" enctype="multipart/form-data">
-                                <div class="mb-3">
-                                    <label class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" name="full_name" required>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Age</label>
-                                    <input type="number" class="form-control" name="age" min="23" required>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Why do you want to become a chef?</label>
-                                    <textarea class="form-control" name="reason" required></textarea>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Upload a Government-Issued ID</label>
-                                    <input type="file" class="form-control" name="id_document" accept=".jpg,.jpeg,.png,.pdf"
-                                        required>
-                                </div>
-
-                                <button type="submit" class="btn btn-warning">Submit Application</button>
-                            </form>
-                        </div>
-                    <?php endif; ?>
-
-                    <!--checks if verified chef-->
-                    <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === "regular"): ?>
-                        <?php
+                    <?php
+                    if (isset($_SESSION["role"]) && $_SESSION["role"] === "regular") {
+                        // Check the current verification status
                         $stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
                         $stmt->bind_param("i", $_SESSION["user_id"]);
                         $stmt->execute();
                         $stmt->bind_result($verification_status);
                         $stmt->fetch();
                         $stmt->close();
-                        ?>
 
-                        <?php if ($verification_status === "pending"): ?>
-                            <p class='text-center' style='color: orange; font-weight: bold;'>Your chef application is pending
-                                approval.</p>
-                        <?php elseif ($verification_status === "approved"): ?>
-                            <p class='text-center' style='color: green; font-weight: bold;'>Your chef account is approved! You can
-                                post meals.</p>
+                        // If the user has not applied (NULL), show the application form
+                        if ($verification_status === NULL): ?>
+                            <div class="container mt-4 text-center">
+                                <h2>Want to Become a Chef?</h2>
+                                <p>Complete the form below to apply. You must be at least 23 years old.</p>
 
-                            <!-- Meal Posting Form -->
-                            <div class="container mt-4">
-                                <h2>Post a Meal</h2>
-                                <form id="meal-form" method="POST" action="post_meal.php" enctype="multipart/form-data">
+                                <form method="POST" action="chef_reg.php" enctype="multipart/form-data">
                                     <div class="mb-3">
-                                        <label class="form-label">Meal Title</label>
-                                        <input type="text" class="form-control" name="title" required>
+                                        <label class="form-label">Full Name</label>
+                                        <input type="text" class="form-control" name="full_name" required>
                                     </div>
+
                                     <div class="mb-3">
-                                        <label class="form-label">Estimated Time for Pickup</label>
-                                        <input type="datetime-local" class="form-control" name="pickup_time" required>
+                                        <label class="form-label">Age</label>
+                                        <input type="number" class="form-control" name="age" min="23" required>
                                     </div>
+
                                     <div class="mb-3">
-                                        <label class="form-label">Description</label>
-                                        <textarea class="form-control" name="description" required></textarea>
+                                        <label class="form-label">Why do you want to become a chef?</label>
+                                        <textarea class="form-control" name="reason" required></textarea>
                                     </div>
+
                                     <div class="mb-3">
-                                        <label class="form-label">Pickup Location</label>
-                                        <input type="text" class="form-control" name="pickup_location" required>
+                                        <label class="form-label">Upload an ID with Date Of birth</label>
+                                        <input type="file" class="form-control" name="id_document" accept=".jpg,.jpeg,.png,.pdf"
+                                            required>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Upload Meal Image</label>
-                                        <input type="file" class="form-control" name="meal_image" accept="image/*">
-                                    </div>
-                                    <button type="submit" class="btn btn-success">Post Meal</button>
+
+                                    <button type="submit" class="btn btn-warning">Submit Application</button>
                                 </form>
                             </div>
-                        <?php endif; ?>
+                        <?php endif;
+                    } ?>
+
+
+                    <?php if (isset($role) && $role === "chef" && $verification_status === "approved"): ?>
+                        <p class='text-center' style='color: green; font-weight: bold;'>Your chef account is approved! You can
+                            post meals.</p>
+
+                        <!-- Meal Posting Form -->
+                        <div class="container mt-4">
+                            <h2>Post a Meal</h2>
+                            <form id="meal-form" method="POST" action="post_meal.php" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label class="form-label">Meal Title</label>
+                                    <input type="text" class="form-control" name="title" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Estimated Time for Pickup</label>
+                                    <input type="datetime-local" class="form-control" name="pickup_time" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Description</label>
+                                    <textarea class="form-control" name="description" required></textarea>
+                                </div>
+
+                                <!-- Allergen Dropdown -->
+                                <div class="mb-3">
+                                    <label class="form-label">Common Allergies</label>
+                                    <select id="allergies" class="form-control" name="allergies[]" multiple="multiple">
+                                        <option value="Peanuts">Peanuts</option>
+                                        <option value="Tree Nuts">Tree Nuts</option>
+                                        <option value="Dairy">Dairy</option>
+                                        <option value="Eggs">Eggs</option>
+                                        <option value="Shellfish">Shellfish</option>
+                                        <option value="Fish">Fish</option>
+                                        <option value="Soy">Soy</option>
+                                        <option value="Wheat">Wheat</option>
+                                        <option value="Sesame">Sesame</option>
+                                        <option value="Gluten">Gluten</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Pickup Location</label>
+                                    <input type="text" class="form-control" name="pickup_location" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Upload Meal Image</label>
+                                    <input type="file" class="form-control" name="meal_image" accept="image/*">
+                                </div>
+                                <button type="submit" class="btn btn-success">Post Meal</button>
+                            </form>
+                        </div>
                     <?php endif; ?>
+
 
                     <!-- Available Meals Section (Only for Logged-in Users) -->
                     <div class="container mt-5">

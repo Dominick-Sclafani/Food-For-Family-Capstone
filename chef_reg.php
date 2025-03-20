@@ -55,7 +55,7 @@ if (!empty($_FILES["id_document"]["name"])) {
     $id_document = basename($target_file); // Store only the filename in the database
 }
 
-// Store application in database (set verification_status to 'pending')
+// Set verification status to "pending"
 $stmt = $conn->prepare("UPDATE users SET role = 'chef', verification_status = 'pending' WHERE username = ?");
 $stmt->bind_param("s", $username);
 
