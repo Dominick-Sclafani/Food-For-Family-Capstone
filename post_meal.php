@@ -1,5 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 session_start();
+
 require "db.php";
 
 if (!isset($_SESSION["username"]) || $_SESSION["role"] !== "chef") {
@@ -9,13 +12,19 @@ if (!isset($_SESSION["username"]) || $_SESSION["role"] !== "chef") {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    echo "<pre>";
+    print_r($_POST);
+    echo "</pre>";
+    exit;
     $user_id = $_SESSION["user_id"];
     $username = $_SESSION["username"];
     $title = trim($_POST["title"]);
     $description = trim($_POST["description"]);
-    $ingredients = trim($_POST["ingredients"]);
-    $allergies = trim($_POST["allergies"]);
+    $ingredients = isset($_POST["ingredients"]) ? trim($_POST["ingredients"]) : "";
+    $allergies = isset($_POST["allergens"]) ? implode(", ", $_POST["allergens"]) : "";
     $pickup_location = trim($_POST["pickup_location"]);
+    $pickup_time = !empty($_POST["pickup_time"]) ? date("Y-m-d H:i:s", strtotime($_POST["pickup_time"])) : NULL;
+
 
     $image_filename = null; // Default null if no image is uploaded
 
@@ -50,9 +59,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Insert meal post into database
-    $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, ingredients, allergies, pickup_location, image) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("isssssss", $user_id, $username, $title, $description, $ingredients, $allergies, $pickup_location, $image_filename);
+    $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, ingredients, allergies, pickup_location, pickup_time, image) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("issssssss", $user_id, $username, $title, $description, $ingredients, $allergies, $pickup_location, $pickup_time, $image_filename);
+
+
 
     if ($stmt->execute()) {
         $_SESSION["success"] = "Meal posted successfully!";

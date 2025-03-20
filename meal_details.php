@@ -11,24 +11,21 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 
 $meal_id = intval($_GET['id']); // Convert to integer to prevent SQL injection
 
-// Retrieve meal details
+// Retrieve meal details from the database
 $stmt = $conn->prepare("SELECT * FROM meals WHERE id = ?");
 $stmt->bind_param("i", $meal_id);
 $stmt->execute();
 $result = $stmt->get_result();
-
-if ($result->num_rows === 0) {
-    $_SESSION["error"] = "Meal not found.";
-    header("Location: index.php");
-    exit;
-}
-
 $meal = $result->fetch_assoc();
 $stmt->close();
+
+if (!$meal) {
+    die("Error: Meal not found.");
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,16 +46,31 @@ $stmt->close();
         <?php endif; ?>
 
         <p><strong>Posted by:</strong> <?= htmlspecialchars($meal["username"]); ?></p>
-        <p><strong>Description:</strong> <?= htmlspecialchars($meal["description"]); ?></p>
-        <p><strong>Ingredients:</strong> <?= htmlspecialchars($meal["ingredients"]); ?></p>
-        <p><strong>Allergies:</strong> <?= htmlspecialchars($meal["allergies"]); ?></p>
-        <p><strong>Pickup Location:</strong> <?= htmlspecialchars($meal["pickup_location"]); ?></p>
-        <p><small class="text-muted">Posted on <?= $meal["timestamp"]; ?></small></p>
+        <p><strong>Description:</strong> <?= !empty(trim($meal["description"])) ? htmlspecialchars($meal["description"]) : "Not specified"; ?></p>
+        <p><strong>Ingredients:</strong> <?= !empty(trim($meal["ingredients"])) ? htmlspecialchars($meal["ingredients"]) : "Not specified"; ?></p>
+
+        <p><strong>Allergies:</strong> 
+            <?= (!empty(trim($meal["allergies"])) && $meal["allergies"] !== ", ") 
+                ? nl2br(htmlspecialchars($meal["allergies"])) 
+                : "None specified"; ?>
+        </p>
+
+        <p><strong>Pickup Location:</strong> <?= !empty(trim($meal["pickup_location"])) ? htmlspecialchars($meal["pickup_location"]) : "Not specified"; ?></p>
+
+        <p><strong>Estimated Pickup Time:</strong> 
+            <?= (!empty($meal["pickup_time"]) && $meal["pickup_time"] !== "0000-00-00 00:00:00" && $meal["pickup_time"] !== NULL) 
+                ? date("F j, Y, g:i A", strtotime($meal["pickup_time"])) 
+                : "Not specified"; ?>
+        </p>
+
+        <p><small class="text-muted">Posted on <?= !empty($meal["timestamp"]) ? date("F j, Y, g:i A", strtotime($meal["timestamp"])) : "Unknown"; ?></small></p>
         <a href="index.php" class="btn btn-primary">Back to Meals</a>
     </div>
 </body>
-
 </html>
+
 <?php
 $conn->close();
 ?>
+
+
