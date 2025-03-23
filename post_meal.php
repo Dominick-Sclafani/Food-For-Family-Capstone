@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require "db.php";
 
@@ -9,7 +12,7 @@ if (!isset($_SESSION["username"]) || $_SESSION["role"] !== "chef") {
     exit;
 }
 
-// Check if chef is verified before allowing meal posting
+// Check if the chef is verified before allowing meal posting
 $stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
 $stmt->bind_param("i", $_SESSION["user_id"]);
 $stmt->execute();
@@ -23,35 +26,35 @@ if ($verification_status !== "approved") {
     exit;
 }
 
-// Check if chef is verified
-$stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
-$stmt->bind_param("i", $_SESSION["user_id"]);
-$stmt->execute();
-$stmt->bind_result($verification_status);
-$stmt->fetch();
-$stmt->close();
-
-if ($verification_status !== "approved") {
-    $_SESSION["error"] = "Your cooks account is still pending verification.";
-    header("Location: index.php");
-    exit;
-}
-
+// Process form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Debugging (Uncomment for testing form data)
+    // echo "<pre>";
+    // print_r($_POST);
+    // print_r($_FILES);
+    // echo "</pre>";
+    // exit;
+
     $user_id = $_SESSION["user_id"];
     $username = $_SESSION["username"];
-    $title = trim($_POST["title"]);
-    $description = trim($_POST["description"]);
-    $allergies = isset($_POST["allergies"]) ? implode(", ", $_POST["allergies"]) : "None"; //makes sure that it takes the piece from the 
-    $pickup_location = trim($_POST["pickup_location"]);
+    $title = isset($_POST["title"]) ? trim($_POST["title"]) : "Untitled Meal";
+    $description = isset($_POST["description"]) ? trim($_POST["description"]) : "No description provided";
+    $ingredients = isset($_POST["ingredients"]) && !empty($_POST["ingredients"]) ? trim($_POST["ingredients"]) : "Not specified";
+    $allergies = isset($_POST["allergens"]) && is_array($_POST["allergens"]) ? implode(", ", $_POST["allergens"]) : "None";
+    $pickup_location = isset($_POST["pickup_location"]) ? trim($_POST["pickup_location"]) : "Not specified";
+    $pickup_time = isset($_POST["pickup_time"]) ? trim($_POST["pickup_time"]) : date("Y-m-d H:i:s"); // Default to current time if missing
 
-    $image_filename = null; // Default null if no image is uploaded
+    $image_filename = null; // Default to null if no image is uploaded
 
     // Handle Image Upload
     if (!empty($_FILES["meal_image"]["name"])) {
         $target_dir = "uploads/";
-        $image_filename = basename($_FILES["meal_image"]["name"]);
-        $target_file = $target_dir . time() . "_" . $image_filename; // Unique filename
+        if (!file_exists($target_dir)) {
+            mkdir($target_dir, 0777, true); // Ensure uploads directory exists
+        }
+
+        $image_filename = time() . "_" . basename($_FILES["meal_image"]["name"]);
+        $target_file = $target_dir . $image_filename;
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
         $allowed_types = ["jpg", "jpeg", "png", "gif"];
 
@@ -72,21 +75,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: index.php");
             exit;
         }
-
-        // Store only the filename in the database
-        $image_filename = basename($target_file);
     }
 
     // Insert meal post into database
-    $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, allergies, pickup_location, image) 
-    VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("issssss", $user_id, $username, $title, $description, $allergies, $pickup_location, $image_filename);
+    $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, ingredients, allergies, pickup_location, pickup_time, image) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("issssssss", $user_id, $username, $title, $description, $ingredients, $allergies, $pickup_location, $pickup_time, $image_filename);
 
     if ($stmt->execute()) {
         $_SESSION["success"] = "Meal posted successfully!";
     } else {
-        $_SESSION["error"] = "Failed to post meal.";
+        $_SESSION["error"] = "Failed to post meal. Error: " . $stmt->error;
     }
+
+    $stmt->close();
+    $conn->close();
 
     header("Location: index.php");
     exit;

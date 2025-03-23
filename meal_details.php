@@ -32,9 +32,9 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food For Family - Homepage</title>
+    <title>Food For Family - Meal Details</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery for AJAX -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
@@ -55,6 +55,12 @@ $stmt->close();
         <p><strong>Ingredients:</strong> <?= htmlspecialchars($meal["ingredients"]); ?></p>
         <p><strong>Allergens:</strong>
             <?= !empty($meal["allergies"]) ? htmlspecialchars($meal["allergies"]) : "None"; ?></p>
+        
+        <!-- Estimated Pickup Time Added Here -->
+        <p><strong>Estimated Pickup Time:</strong> 
+    <?= date("m/d/Y, h:i A", strtotime($meal["pickup_time"])); ?>
+</p>
+
 
         <p><strong>Pickup Location:</strong> <?= htmlspecialchars($meal["pickup_location"]); ?></p>
         <p><small class="text-muted">Posted on <?= $meal["timestamp"]; ?></small></p>
