@@ -5,52 +5,47 @@ ini_set('display_errors', 1);
 session_start();
 require "db.php";
 
-// Check if the user is logged in and is a chef
-if (!isset($_SESSION["username"]) || $_SESSION["role"] !== "chef") {
-    $_SESSION["error"] = "Only registered chefs can post meals.";
+// ✅ Only allow logged-in chefs or admins
+if (!isset($_SESSION["username"]) || !in_array($_SESSION["role"], ["chef", "admin"])) {
+    $_SESSION["error"] = "Only approved chefs or admins can post meals.";
     header("Location: index.php");
     exit;
 }
 
-// Check if the chef is verified before allowing meal posting
-$stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
-$stmt->bind_param("i", $_SESSION["user_id"]);
-$stmt->execute();
-$stmt->bind_result($verification_status);
-$stmt->fetch();
-$stmt->close();
+// ✅ If the user is a chef, check verification
+if ($_SESSION["role"] === "chef") {
+    $stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
+    $stmt->bind_param("i", $_SESSION["user_id"]);
+    $stmt->execute();
+    $stmt->bind_result($verification_status);
+    $stmt->fetch();
+    $stmt->close();
 
-if ($verification_status !== "approved") {
-    $_SESSION["error"] = "Your chef account is still pending approval.";
-    header("Location: index.php");
-    exit;
+    if ($verification_status !== "approved") {
+        $_SESSION["error"] = "Your chef account is still pending approval.";
+        header("Location: index.php");
+        exit;
+    }
 }
 
-// Process form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Debugging (Uncomment for testing form data)
-    // echo "<pre>";
-    // print_r($_POST);
-    // print_r($_FILES);
-    // echo "</pre>";
-    // exit;
-
+// ✅ Process the form
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $user_id = $_SESSION["user_id"];
     $username = $_SESSION["username"];
-    $title = isset($_POST["title"]) ? trim($_POST["title"]) : "Untitled Meal";
-    $description = isset($_POST["description"]) ? trim($_POST["description"]) : "No description provided";
-    $ingredients = isset($_POST["ingredients"]) && !empty($_POST["ingredients"]) ? trim($_POST["ingredients"]) : "Not specified";
+    $title = trim($_POST["title"] ?? "Untitled Meal");
+    $description = trim($_POST["description"] ?? "No description provided");
+    $ingredients = trim($_POST["ingredients"] ?? "Not specified");
     $allergies = isset($_POST["allergens"]) && is_array($_POST["allergens"]) ? implode(", ", $_POST["allergens"]) : "None";
-    $pickup_location = isset($_POST["pickup_location"]) ? trim($_POST["pickup_location"]) : "Not specified";
-    $pickup_time = isset($_POST["pickup_time"]) ? trim($_POST["pickup_time"]) : date("Y-m-d H:i:s"); // Default to current time if missing
+    $pickup_location = trim($_POST["pickup_location"] ?? "Not specified");
+    $pickup_time = trim($_POST["pickup_time"] ?? date("Y-m-d H:i:s"));
 
-    $image_filename = null; // Default to null if no image is uploaded
+    $image_filename = null;
 
-    // Handle Image Upload
+    // ✅ Handle image upload if present
     if (!empty($_FILES["meal_image"]["name"])) {
         $target_dir = "uploads/";
         if (!file_exists($target_dir)) {
-            mkdir($target_dir, 0777, true); // Ensure uploads directory exists
+            mkdir($target_dir, 0777, true);
         }
 
         $image_filename = time() . "_" . basename($_FILES["meal_image"]["name"]);
@@ -64,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit;
         }
 
-        if ($_FILES["meal_image"]["size"] > 5000000) { // 5MB limit
+        if ($_FILES["meal_image"]["size"] > 5000000) {
             $_SESSION["error"] = "Image size too large (Max: 5MB).";
             header("Location: index.php");
             exit;
@@ -77,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Insert meal post into database
+    // ✅ Insert meal into database
     $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, ingredients, allergies, pickup_location, pickup_time, image) 
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("issssssss", $user_id, $username, $title, $description, $ingredients, $allergies, $pickup_location, $pickup_time, $image_filename);
