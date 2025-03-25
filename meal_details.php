@@ -9,7 +9,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
     exit;
 }
 
-$meal_id = intval($_GET['id']); // Convert to integer to prevent SQL injection
+$meal_id = intval($_GET['id']); // Prevent SQL injection
 
 // Retrieve meal details
 $stmt = $conn->prepare("SELECT * FROM meals WHERE id = ?");
@@ -26,11 +26,26 @@ if ($result->num_rows === 0) {
 $meal = $result->fetch_assoc();
 $stmt->close();
 
-// Prepare coordinates
+// Check if user is allowed to view the pickup location
+$can_view_location = false;
+if (isset($_SESSION["user_id"])) {
+    $user_id = $_SESSION["user_id"];
+    $check_purchase = $conn->prepare("SELECT * FROM purchases WHERE user_id = ? AND meal_id = ?");
+    $check_purchase->bind_param("ii", $user_id, $meal_id);
+    $check_purchase->execute();
+    $purchase_result = $check_purchase->get_result();
+    if ($purchase_result->num_rows > 0) {
+        $can_view_location = true;
+    }
+    $check_purchase->close();
+}
+
+// Parse pickup coordinates
 $coords = explode(",", $meal["pickup_location"]);
 $pickupLat = isset($coords[0]) ? floatval($coords[0]) : 0;
 $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,8 +55,6 @@ $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 </head>
@@ -61,44 +74,47 @@ $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
   <p><strong>Ingredients:</strong> <?= htmlspecialchars($meal["ingredients"]); ?></p>
   <p><strong>Allergens:</strong> <?= !empty($meal["allergies"]) ? htmlspecialchars($meal["allergies"]) : "None"; ?></p>
   <p><strong>Estimated Pickup Time:</strong> <?= date("m/d/Y, h:i A", strtotime($meal["pickup_time"])); ?></p>
-  <p><strong>Pickup Location:</strong> <?= htmlspecialchars($meal["pickup_location"]); ?></p>
+
+  <?php if ($can_view_location): ?>
+    <p><strong>Pickup Location:</strong> <?= htmlspecialchars($meal["pickup_location"]); ?></p>
+  <?php else: ?>
+    <p class="text-muted"><strong>Pickup Location:</strong> Only visible to customers who purchased this meal.</p>
+  <?php endif; ?>
+
   <p><strong>Price:</strong> $<?= htmlspecialchars(number_format((float)$meal["price"], 2)); ?></p>
   <p><small class="text-muted">Posted on <?= $meal["timestamp"]; ?></small></p>
   <a href="index.php" class="btn btn-primary mb-4">Back to Meals</a>
 
-  <!-- Map -->
-  <h5>Pickup Location Map</h5>
-  <div id="map" style="height: 300px;"></div>
+  <?php if ($can_view_location): ?>
+    <h5>Pickup Location Map</h5>
+    <div id="map" style="height: 300px;"></div>
+  <?php endif; ?>
 </div>
 
+<?php if ($can_view_location): ?>
 <script>
 const pickupLat = <?= $pickupLat ?>;
 const pickupLng = <?= $pickupLng ?>;
 
 const map = L.map('map').setView([pickupLat, pickupLng], 14);
 
-// Add OpenStreetMap tiles
+// OpenStreetMap tiles
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
 }).addTo(map);
 
-// Mark pickup location
+// Pickup marker
 L.marker([pickupLat, pickupLng]).addTo(map).bindPopup("Pickup Location").openPopup();
 
-// Get and mark user location
+// User location + distance
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(position => {
     const userLat = position.coords.latitude;
     const userLng = position.coords.longitude;
 
-    // Add user marker
     L.marker([userLat, userLng]).addTo(map).bindPopup("Your Location").openPopup();
-
-    // Draw line and show distance
     L.polyline([[userLat, userLng], [pickupLat, pickupLng]], { color: 'blue' }).addTo(map);
-    const distance = map.distance([userLat, userLng], [pickupLat, pickupLng]) / 1609.34; // meters to miles
-
-    // Show alert or display somewhere
+    const distance = map.distance([userLat, userLng], [pickupLat, pickupLng]) / 1609.34;
     alert(`Distance to pickup: ${distance.toFixed(2)} miles`);
   }, () => {
     alert("Unable to access your location.");
@@ -107,6 +123,7 @@ if (navigator.geolocation) {
   alert("Geolocation is not supported by this browser.");
 }
 </script>
+<?php endif; ?>
 </body>
 </html>
 
