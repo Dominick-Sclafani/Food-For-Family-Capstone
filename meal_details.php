@@ -64,9 +64,12 @@ $stmt->close();
 
         <p><strong>Pickup Location:</strong> <?= htmlspecialchars($meal["pickup_location"]); ?></p>
         <p><small class="text-muted">Posted on <?= $meal["timestamp"]; ?></small></p>
+        <p><strong>Price:</strong> $<?= htmlspecialchars(number_format((float)$meal["price"], 2)); ?></p>
         <a href="index.php" class="btn btn-primary">Back to Meals</a>
     </div>
 </body>
+
+
 
 </html>
 <?php

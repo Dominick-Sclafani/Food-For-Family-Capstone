@@ -41,6 +41,15 @@
             <input type="text" class="form-control" name="pickup_location" required>
         </div>
 
+
+        <div class="mb-3">
+            <label class="form-label">Price ($)</label>
+            <input type="number" class="form-control" name="price" step="0.01" min="0" required>
+        </div>
+
+
+
+
         <div class="mb-3">
             <label class="form-label">Upload Meal Image</label>
             <input type="file" class="form-control" name="meal_image" accept="image/*">

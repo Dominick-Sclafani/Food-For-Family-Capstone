@@ -1,6 +1,7 @@
 <?php
-error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 session_start();
 require "db.php";
@@ -38,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $allergies = isset($_POST["allergens"]) && is_array($_POST["allergens"]) ? implode(", ", $_POST["allergens"]) : "None";
     $pickup_location = trim($_POST["pickup_location"] ?? "Not specified");
     $pickup_time = trim($_POST["pickup_time"] ?? date("Y-m-d H:i:s"));
+    $price = trim($_POST["price"] ?? "0.00");
 
     $image_filename = null;
 
@@ -72,10 +74,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 
-    // ✅ Insert meal into database
-    $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, ingredients, allergies, pickup_location, pickup_time, image) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("issssssss", $user_id, $username, $title, $description, $ingredients, $allergies, $pickup_location, $pickup_time, $image_filename);
+    $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, ingredients, allergies, pickup_location, pickup_time, price, image) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("isssssssss", $user_id, $username, $title, $description, $ingredients, $allergies, $pickup_location, $pickup_time, $price, $image_filename);
 
     if ($stmt->execute()) {
         $_SESSION["success"] = "Meal posted successfully!";
