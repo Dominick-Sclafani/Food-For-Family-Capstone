@@ -6,14 +6,14 @@ error_reporting(E_ALL);
 session_start();
 require "db.php";
 
-// ✅ Only allow logged-in chefs or admins
+//  Only allow logged-in chefs or admins
 if (!isset($_SESSION["username"]) || !in_array($_SESSION["role"], ["chef", "admin"])) {
     $_SESSION["error"] = "Only approved chefs or admins can post meals.";
     header("Location: index.php");
     exit;
 }
 
-// ✅ If the user is a chef, check verification
+// If the user is a chef, check verification
 if ($_SESSION["role"] === "chef") {
     $stmt = $conn->prepare("SELECT verification_status FROM users WHERE id = ?");
     $stmt->bind_param("i", $_SESSION["user_id"]);
@@ -29,7 +29,7 @@ if ($_SESSION["role"] === "chef") {
     }
 }
 
-// ✅ Process the form
+//  Process the form
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $user_id = $_SESSION["user_id"];
     $username = $_SESSION["username"];
@@ -37,13 +37,39 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $description = trim($_POST["description"] ?? "No description provided");
     $ingredients = trim($_POST["ingredients"] ?? "Not specified");
     $allergies = isset($_POST["allergens"]) && is_array($_POST["allergens"]) ? implode(", ", $_POST["allergens"]) : "None";
-    $pickup_location = trim($_POST["pickup_location"] ?? "Not specified");
+    $raw_address = trim($_POST["pickup_location"] ?? "Not specified");
+
+    // Encode the address for the API
+    $encoded_address = urlencode($raw_address);
+    $nominatim_url = "https://nominatim.openstreetmap.org/search?q={$encoded_address}&format=json&limit=1";
+
+    // Set user-agent header to avoid being blocked
+    $opts = ['http' => ['header' => "User-Agent: FoodForFamilyApp/1.0\r\n"]];
+    $context = stream_context_create($opts);
+
+    // Make API request
+    $response = file_get_contents($nominatim_url, false, $context);
+    $geo_data = json_decode($response, true);
+
+    // Default fallback
+    $pickup_location = "0,0";
+
+    // Use coordinates if found
+    if (!empty($geo_data) && isset($geo_data[0]['lat'], $geo_data[0]['lon'])) {
+        $lat = $geo_data[0]['lat'];
+        $lon = $geo_data[0]['lon'];
+        $pickup_location = "{$lat},{$lon}";
+    } else {
+        $_SESSION["error"] = "Could not geocode pickup address. Please enter a more specific address.";
+        header("Location: index.php");
+        exit;
+    }
     $pickup_time = trim($_POST["pickup_time"] ?? date("Y-m-d H:i:s"));
     $price = trim($_POST["price"] ?? "0.00");
 
     $image_filename = null;
 
-    // ✅ Handle image upload if present
+    //  Handle image upload if present
     if (!empty($_FILES["meal_image"]["name"])) {
         $target_dir = "uploads/";
         if (!file_exists($target_dir)) {

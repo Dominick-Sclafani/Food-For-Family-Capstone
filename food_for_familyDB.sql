@@ -24,6 +24,15 @@ CREATE TABLE IF NOT EXISTS meals (
 );
 
 
+CREATE TABLE purchases (
+  id int NOT NULL AUTO_INCREMENT,
+  user_id int NOT NULL,
+  meal_id int NOT NULL,
+  purchase_time datetime DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
 --all the sql alterations we do 
 
 
