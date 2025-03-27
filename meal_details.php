@@ -2,6 +2,9 @@
 session_start();
 require "db.php";
 
+include('includes/navbar.php');
+
+
 // Check if a meal ID was provided
 if (!isset($_GET['id']) || empty($_GET['id'])) {
   $_SESSION["error"] = "Invalid meal selection.";
@@ -71,9 +74,6 @@ $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
     <p><strong>Estimated Pickup Time:</strong> <?= date("m/d/Y, h:i A", strtotime($meal["pickup_time"])); ?></p>
     <p><strong>Price:</strong> $<?= htmlspecialchars(number_format((float) $meal["price"], 2)); ?></p>
     <p><small class="text-muted">Posted on <?= $meal["timestamp"]; ?></small></p>
-
-    <a href="index.php" class="btn btn-primary mb-4">Back to Meals</a>
-
     <!-- Buy Button (Only for regular users who haven't purchased yet) -->
     <?php
     if (isset($_SESSION["user_id"]) && $_SESSION["role"] === "regular") {
@@ -137,16 +137,16 @@ $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
             alert("Unable to access your location.");
           });
         }
-
-        document.getElementById("distance-info").innerText = `Distance to pickup: ${distance.toFixed(2)} miles`;
       </script>
     <?php else: ?>
       <div class="alert alert-warning">
         You must purchase this meal to view its pickup location.
       </div>
     <?php endif; ?>
+    <a href="index.php" class="btn btn-primary mb-4">Back to Meals</a>
 
   </div>
+
 </body>
 
 </html>
