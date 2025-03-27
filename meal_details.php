@@ -111,6 +111,7 @@ $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
       <p><strong>Pickup Location:</strong> <?= htmlspecialchars($meal["pickup_location"]); ?></p>
       <h5>Pickup Location Map</h5>
       <div id="map" style="height: 300px;"></div>
+      <p id="distance-info" class="mt-3 fw-semibold text-primary"></p>
 
       <script>
         const pickupLat = <?= $pickupLat ?>;
@@ -131,11 +132,13 @@ $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
             L.marker([userLat, userLng]).addTo(map).bindPopup("Your Location");
             L.polyline([[userLat, userLng], [pickupLat, pickupLng]], { color: 'blue' }).addTo(map);
             const distance = map.distance([userLat, userLng], [pickupLat, pickupLng]) / 1609.34;
-            alert(`Distance to pickup: ${distance.toFixed(2)} miles`);
+            document.getElementById("distance-info").innerText = `Distance to pickup: ${distance.toFixed(2)} miles`;
           }, () => {
             alert("Unable to access your location.");
           });
         }
+
+        document.getElementById("distance-info").innerText = `Distance to pickup: ${distance.toFixed(2)} miles`;
       </script>
     <?php else: ?>
       <div class="alert alert-warning">
