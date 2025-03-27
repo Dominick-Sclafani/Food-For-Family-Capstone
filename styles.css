@@ -45,3 +45,50 @@ body {
     height: auto;
     border-bottom: 2px solid #ddd;
 }
+
+/* Review Form Styles */
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    font-size: 35px;
+    color: #ddd;
+    padding: 5px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.rating input:checked~label,
+.rating label:hover,
+.rating label:hover~label {
+    color: #ffd700;
+}
+
+/* Review Display Styles */
+.rating-display {
+    color: #ffd700;
+    font-size: 20px;
+}
+
+.rating-display .star.empty {
+    color: #ddd;
+}
+
+.review-item:last-child {
+    border-bottom: none !important;
+}
+
+.review-item {
+    transition: background-color 0.2s ease;
+}
+
+.review-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}

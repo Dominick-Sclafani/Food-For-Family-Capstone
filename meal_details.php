@@ -60,91 +60,134 @@ $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
 
 <body class="bg-light">
   <div class="container mt-5">
-    <h2><?= htmlspecialchars($meal["title"]); ?></h2>
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title mb-4"><?= htmlspecialchars($meal["title"]); ?></h2>
 
-    <?php if (!empty($meal["image"])): ?>
-      <img src="uploads/<?= htmlspecialchars($meal["image"]); ?>" class="img-fluid rounded mb-4" alt="Meal Image">
-    <?php endif; ?>
+        <?php if (!empty($meal["image"])): ?>
+          <img src="uploads/<?= htmlspecialchars($meal["image"]); ?>" class="img-fluid rounded mb-4" alt="Meal Image">
+        <?php endif; ?>
 
-    <p><strong>Posted by:</strong> <?= htmlspecialchars($meal["username"]); ?></p>
-    <p><strong>Description:</strong> <?= htmlspecialchars($meal["description"]); ?></p>
-    <p><strong>Ingredients:</strong> <?= htmlspecialchars($meal["ingredients"]); ?></p>
-    <p><strong>Allergens:</strong> <?= !empty($meal["allergies"]) ? htmlspecialchars($meal["allergies"]) : "None"; ?>
-    </p>
-    <p><strong>Estimated Pickup Time:</strong> <?= date("m/d/Y, h:i A", strtotime($meal["pickup_time"])); ?></p>
-    <p><strong>Price:</strong> $<?= htmlspecialchars(number_format((float) $meal["price"], 2)); ?></p>
-    <p><small class="text-muted">Posted on <?= $meal["timestamp"]; ?></small></p>
-    <!-- Buy Button (Only for regular users who haven't purchased yet) -->
-    <?php
-    if (isset($_SESSION["user_id"]) && $_SESSION["role"] === "regular") {
-      $check_purchase = $conn->prepare("SELECT * FROM purchases WHERE user_id = ? AND meal_id = ?");
-      $check_purchase->bind_param("ii", $_SESSION["user_id"], $meal_id);
-      $check_purchase->execute();
-      $purchase_result = $check_purchase->get_result();
+        <div class="row">
+          <div class="col-md-8">
+            <p><strong>Posted by:</strong> <a href="profile.php?id=<?= $meal['user_id'] ?>"
+                class="text-decoration-none"><?= htmlspecialchars($meal["username"]); ?></a></p>
+            <p><strong>Description:</strong> <?= htmlspecialchars($meal["description"]); ?></p>
+            <p><strong>Ingredients:</strong> <?= htmlspecialchars($meal["ingredients"]); ?></p>
+            <p><strong>Allergens:</strong>
+              <?= !empty($meal["allergies"]) ? htmlspecialchars($meal["allergies"]) : "None"; ?></p>
+            <p><strong>Estimated Pickup Time:</strong> <?= date("m/d/Y, h:i A", strtotime($meal["pickup_time"])); ?></p>
+            <p><strong>Price:</strong> $<?= htmlspecialchars(number_format((float) $meal["price"], 2)); ?></p>
+            <p><small class="text-muted">Posted on <?= $meal["timestamp"]; ?></small></p>
+          </div>
+          <div class="col-md-4">
+            <?php
+            if (isset($_SESSION["user_id"])) {
+              $check_purchase = $conn->prepare("SELECT * FROM purchases WHERE user_id = ? AND meal_id = ?");
+              $check_purchase->bind_param("ii", $_SESSION["user_id"], $meal_id);
+              $check_purchase->execute();
+              $purchase_result = $check_purchase->get_result();
 
-      if ($purchase_result->num_rows === 0): ?>
-        <form method="POST" action="includes/purchase_meal.php">
-          <input type="hidden" name="meal_id" value="<?= $meal_id ?>">
-          <button type="submit" class="btn btn-success mb-3">Buy for $<?= number_format($meal["price"], 2) ?></button>
-        </form>
-      <?php endif;
+              if ($purchase_result->num_rows === 0): ?>
+                <div class="text-center">
+                  <form method="POST" action="includes/purchase_meal.php">
+                    <input type="hidden" name="meal_id" value="<?= $meal_id ?>">
+                    <button type="submit" class="btn btn-success btn-lg w-100">Buy for
+                      $<?= number_format($meal["price"], 2) ?></button>
+                  </form>
+                </div>
+              <?php endif;
 
-      $check_purchase->close();
-    }
-    ?>
+              $check_purchase->close();
+            }
+            ?>
+          </div>
+        </div>
 
-    <!-- Pickup Info -->
-    <?php
-    $canViewPickup = false;
+        <!-- Pickup Info -->
+        <?php
+        $canViewPickup = false;
 
-    if (isset($_SESSION["user_id"])) {
-      // Admins and Chefs can always view pickup info
-      if ($_SESSION["role"] === "admin" || $_SESSION["role"] === "chef") {
-        $canViewPickup = true;
-      } elseif ($_SESSION["role"] === "regular" && $userHasPurchased) {
-        $canViewPickup = true;
-      }
-    }
-    ?>
-
-    <?php if ($canViewPickup): ?>
-      <p><strong>Pickup Location:</strong> <?= htmlspecialchars($meal["pickup_location"]); ?></p>
-      <h5>Pickup Location Map</h5>
-      <div id="map" style="height: 300px;"></div>
-      <p id="distance-info" class="mt-3 fw-semibold text-primary"></p>
-
-      <script>
-        const pickupLat = <?= $pickupLat ?>;
-        const pickupLng = <?= $pickupLng ?>;
-        const map = L.map('map').setView([pickupLat, pickupLng], 14);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19
-        }).addTo(map);
-
-        L.marker([pickupLat, pickupLng]).addTo(map).bindPopup("Pickup Location").openPopup();
-
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(position => {
-            const userLat = position.coords.latitude;
-            const userLng = position.coords.longitude;
-
-            L.marker([userLat, userLng]).addTo(map).bindPopup("Your Location");
-            L.polyline([[userLat, userLng], [pickupLat, pickupLng]], { color: 'blue' }).addTo(map);
-            const distance = map.distance([userLat, userLng], [pickupLat, pickupLng]) / 1609.34;
-            document.getElementById("distance-info").innerText = `Distance to pickup: ${distance.toFixed(2)} miles`;
-          }, () => {
-            alert("Unable to access your location.");
-          });
+        if (isset($_SESSION["user_id"])) {
+          // Admins can always view pickup info
+          if ($_SESSION["role"] === "admin") {
+            $canViewPickup = true;
+          }
+          // Chef who posted the meal can view pickup info
+          elseif ($_SESSION["role"] === "chef" && $_SESSION["user_id"] == $meal["user_id"]) {
+            $canViewPickup = true;
+          }
+          // Any user who has purchased the meal can view pickup info
+          elseif ($userHasPurchased) {
+            $canViewPickup = true;
+          }
         }
-      </script>
-    <?php else: ?>
-      <div class="alert alert-warning">
-        You must purchase this meal to view its pickup location.
-      </div>
-    <?php endif; ?>
-    <a href="index.php" class="btn btn-primary mb-4">Back to Meals</a>
+        ?>
 
+        <div class="mt-4">
+          <?php if ($canViewPickup): ?>
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title">Pickup Information</h5>
+                <p><strong>Pickup Location:</strong> <?= htmlspecialchars($meal["pickup_location"]); ?></p>
+                <h5>Pickup Location Map</h5>
+                <div id="map" style="height: 300px;"></div>
+                <p id="distance-info" class="mt-3 fw-semibold text-primary"></p>
+
+                <script>
+                  const pickupLat = <?= $pickupLat ?>;
+                  const pickupLng = <?= $pickupLng ?>;
+                  const map = L.map('map').setView([pickupLat, pickupLng], 14);
+
+                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19
+                  }).addTo(map);
+
+                  L.marker([pickupLat, pickupLng]).addTo(map).bindPopup("Pickup Location").openPopup();
+
+                  if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(position => {
+                      const userLat = position.coords.latitude;
+                      const userLng = position.coords.longitude;
+
+                      L.marker([userLat, userLng]).addTo(map).bindPopup("Your Location");
+                      L.polyline([[userLat, userLng], [pickupLat, pickupLng]], { color: 'blue' }).addTo(map);
+                      const distance = map.distance([userLat, userLng], [pickupLat, pickupLng]) / 1609.34;
+                      document.getElementById("distance-info").innerText = `Distance to pickup: ${distance.toFixed(2)} miles`;
+                    }, () => {
+                      alert("Unable to access your location.");
+                    });
+                  }
+                </script>
+              </div>
+            </div>
+          <?php else: ?>
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div class="alert alert-warning">
+                  <?php if (!isset($_SESSION["user_id"])): ?>
+                    You must be logged in to view the pickup location.
+                  <?php else: ?>
+                    You must purchase this meal to view its pickup location.
+                  <?php endif; ?>
+                </div>
+              </div>
+            </div>
+          <?php endif; ?>
+        </div>
+
+        <div class="mt-4">
+          <a href="index.php" class="btn btn-primary">Back to Meals</a>
+        </div>
+
+        <!-- Add Reviews Section -->
+        <?php if (isset($_SESSION["user_id"])): ?>
+          <?php include('includes/review_form.php'); ?>
+        <?php endif; ?>
+
+        <?php include('includes/display_reviews.php'); ?>
+      </div>
+    </div>
   </div>
 
 </body>

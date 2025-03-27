@@ -11,8 +11,8 @@
       <ul class="navbar-nav ms-auto">
         <?php if (isset($_SESSION["username"])): ?>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
               <img src="uploads/default-profile.png" alt="Profile" width="30" height="30" class="rounded-circle">
               <?= htmlspecialchars($_SESSION["username"]); ?>
             </a>
@@ -21,9 +21,18 @@
               <?php if ($_SESSION["role"] === "admin"): ?>
                 <li><a class="dropdown-item" href="admin_dash.php">Admin Dashboard</a></li>
               <?php endif; ?>
-              <li><hr class="dropdown-divider"></li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
               <li><a class="dropdown-item text-danger" href="logout.php">Logout</a></li>
             </ul>
+          </li>
+        <?php else: ?>
+          <li class="nav-item">
+            <a class="nav-link" href="login.php">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="register.php">Register</a>
           </li>
         <?php endif; ?>
       </ul>

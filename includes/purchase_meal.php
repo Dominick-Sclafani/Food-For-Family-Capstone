@@ -6,44 +6,64 @@ error_reporting(E_ALL);
 session_start();
 require "../db.php";
 
-if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "regular") {
-    $_SESSION["error"] = "Only customers can purchase meals.";
+// Check if user is logged in
+if (!isset($_SESSION["user_id"])) {
+    $_SESSION["error"] = "Please log in to purchase a meal.";
+    header("Location: ../login.php");
+    exit;
+}
+
+// Check if meal_id is provided
+if (!isset($_POST["meal_id"])) {
+    $_SESSION["error"] = "Invalid meal selection.";
     header("Location: ../index.php");
     exit;
 }
 
-if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["meal_id"])) {
-    $meal_id = intval($_POST["meal_id"]);
-    $user_id = $_SESSION["user_id"];
+$meal_id = intval($_POST["meal_id"]);
+$user_id = $_SESSION["user_id"];
 
-    // Check if already purchased
-    $check = $conn->prepare("SELECT * FROM purchases WHERE user_id = ? AND meal_id = ?");
-    $check->bind_param("ii", $user_id, $meal_id);
-    $check->execute();
-    $result = $check->get_result();
+// Check if meal exists and is available
+$stmt = $conn->prepare("SELECT * FROM meals WHERE id = ?");
+$stmt->bind_param("i", $meal_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        $_SESSION["error"] = "You have already purchased this meal.";
-        header("Location: ../meal_details.php?id=" . $meal_id);
-        exit;
-    }
+if ($result->num_rows === 0) {
+    $_SESSION["error"] = "Meal not found.";
+    header("Location: ../index.php");
+    exit;
+}
 
-    // Insert purchase
-    $stmt = $conn->prepare("INSERT INTO purchases (user_id, meal_id) VALUES (?, ?)");
-    $stmt->bind_param("ii", $user_id, $meal_id);
+$meal = $result->fetch_assoc();
+$stmt->close();
 
-    if ($stmt->execute()) {
-        $_SESSION["success"] = "Purchase successful!";
-    } else {
-        $_SESSION["error"] = "Purchase failed: " . $stmt->error;
-    }
+// Check if user has already purchased this meal
+$check_purchase = $conn->prepare("SELECT * FROM purchases WHERE user_id = ? AND meal_id = ?");
+$check_purchase->bind_param("ii", $user_id, $meal_id);
+$check_purchase->execute();
+$purchase_result = $check_purchase->get_result();
 
-    $stmt->close();
-    $conn->close();
+if ($purchase_result->num_rows > 0) {
+    $_SESSION["error"] = "You have already purchased this meal.";
     header("Location: ../meal_details.php?id=" . $meal_id);
     exit;
-} else {
-    $_SESSION["error"] = "Invalid request.";
-    header("Location: ../index.php");
-    exit;
 }
+
+$check_purchase->close();
+
+// Insert purchase record
+$stmt = $conn->prepare("INSERT INTO purchases (user_id, meal_id) VALUES (?, ?)");
+$stmt->bind_param("ii", $user_id, $meal_id);
+
+if ($stmt->execute()) {
+    $_SESSION["success"] = "Meal purchased successfully!";
+} else {
+    $_SESSION["error"] = "Error purchasing meal. Please try again.";
+}
+
+$stmt->close();
+$conn->close();
+
+header("Location: ../meal_details.php?id=" . $meal_id);
+exit;
