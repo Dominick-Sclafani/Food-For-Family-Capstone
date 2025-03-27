@@ -5,7 +5,7 @@
 
 <!-- Hidden Home Cook Application Form -->
 <div class="container mt-4" id="homeCookForm" style="display: none;">
-  <form method="POST" action="your_form_handler.php" enctype="multipart/form-data">
+  <form method="POST" action="chef_reg.php" enctype="multipart/form-data">
     <div class="mb-3">
       <label for="full_name" class="form-label">Full Name</label>
       <input type="text" class="form-control" name="full_name" required>

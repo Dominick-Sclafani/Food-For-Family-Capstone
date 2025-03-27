@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 require "db.php";
 
@@ -7,8 +8,29 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "admin") {
     die("Access denied.");
 }
 
+
 // Fetch pending chefs
 $result = $conn->query("SELECT id, username FROM users WHERE verification_status = 'pending'");
+?>
+
+<?php
+// Handle approvals/rejections
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $chef_id = $_POST["chef_id"];
+
+    if (isset($_POST["approve"])) {
+        $stmt = $conn->prepare("UPDATE users SET verification_status = 'approved' WHERE id = ?");
+        $stmt->bind_param("i", $chef_id);
+        $stmt->execute();
+    } elseif (isset($_POST["reject"])) {
+        $stmt = $conn->prepare("UPDATE users SET verification_status = 'rejected' WHERE id = ?");
+        $stmt->bind_param("i", $chef_id);
+        $stmt->execute();
+    }
+
+    header("Location: admin_dash.php");
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -87,23 +109,3 @@ $result = $conn->query("SELECT id, username FROM users WHERE verification_status
 </body>
 
 </html>
-
-<?php
-// Handle approvals/rejections
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $chef_id = $_POST["chef_id"];
-
-    if (isset($_POST["approve"])) {
-        $stmt = $conn->prepare("UPDATE users SET verification_status = 'approved' WHERE id = ?");
-        $stmt->bind_param("i", $chef_id);
-        $stmt->execute();
-    } elseif (isset($_POST["reject"])) {
-        $stmt = $conn->prepare("UPDATE users SET verification_status = 'rejected' WHERE id = ?");
-        $stmt->bind_param("i", $chef_id);
-        $stmt->execute();
-    }
-
-    header("Location: admin_dash.php");
-    exit;
-}
-?>
