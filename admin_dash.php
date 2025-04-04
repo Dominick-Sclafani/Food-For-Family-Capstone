@@ -8,18 +8,38 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "admin") {
     die("Access denied.");
 }
 
+// Handle post deletion
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_meal"])) {
+    $meal_id = $_POST["meal_id"];
+    $stmt = $conn->prepare("DELETE FROM meals WHERE id = ?");
+    $stmt->bind_param("i", $meal_id);
+    if ($stmt->execute()) {
+        $_SESSION["success"] = "Meal deleted successfully.";
+    } else {
+        $_SESSION["error"] = "Failed to delete meal.";
+    }
+    $stmt->close();
+    header("Location: admin_dash.php");
+    exit;
+}
 
 // Fetch pending chefs with their ID documents
-$result = $conn->query("
+$pending_chefs = $conn->query("
     SELECT id, username, id_document 
     FROM users 
     WHERE verification_status = 'pending'
 ");
-?>
 
-<?php
-// Handle approvals/rejections
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Fetch all meals with chef information
+$all_meals = $conn->query("
+    SELECT m.*, u.username as chef_username 
+    FROM meals m 
+    JOIN users u ON m.user_id = u.id 
+    ORDER BY m.timestamp DESC
+");
+
+// Handle chef approvals/rejections
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["chef_id"])) {
     $chef_id = $_POST["chef_id"];
 
     if (isset($_POST["approve"])) {
@@ -73,11 +93,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Main Content -->
     <div class="container mt-5">
         <h2 class="text-center">Admin Dashboard</h2>
-        <p class="text-center text-muted">Manage pending chef applications below.</p>
+        <p class="text-center text-muted">Manage pending chef applications and all posts below.</p>
 
-        <div class="card shadow-lg p-4">
+        <!-- Pending Chef Applications Section -->
+        <div class="card shadow-lg p-4 mb-4">
             <h4 class="mb-3">Pending Chef Applications</h4>
-            <?php if ($result->num_rows > 0): ?>
+            <?php if ($pending_chefs->num_rows > 0): ?>
                 <table class="table table-striped table-bordered">
                     <thead class="table-dark">
                         <tr>
@@ -87,7 +108,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while ($row = $result->fetch_assoc()): ?>
+                        <?php while ($row = $pending_chefs->fetch_assoc()): ?>
                             <tr>
                                 <td><?= htmlspecialchars($row['username']); ?></td>
                                 <td>
@@ -117,6 +138,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </table>
             <?php else: ?>
                 <p class="text-center text-muted">No pending chef applications.</p>
+            <?php endif; ?>
+        </div>
+
+        <!-- All Posts Section -->
+        <div class="card shadow-lg p-4">
+            <h4 class="mb-3">All Posts</h4>
+            <?php if ($all_meals->num_rows > 0): ?>
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Title</th>
+                            <th>Chef</th>
+                            <th>Posted On</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($meal = $all_meals->fetch_assoc()): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($meal['title']); ?></td>
+                                <td><?= htmlspecialchars($meal['chef_username']); ?></td>
+                                <td><?= date("m/d/Y H:i", strtotime($meal['timestamp'])); ?></td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="meal_details.php?id=<?= $meal['id']; ?>" class="btn btn-info btn-sm">
+                                            View
+                                        </a>
+                                        <form method="POST" class="d-inline"
+                                            onsubmit="return confirm('Are you sure you want to delete this meal?');">
+                                            <input type="hidden" name="meal_id" value="<?= $meal['id']; ?>">
+                                            <button type="submit" name="delete_meal" class="btn btn-danger btn-sm">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p class="text-center text-muted">No meals posted yet.</p>
             <?php endif; ?>
         </div>
     </div>
