@@ -42,6 +42,7 @@ CREATE TABLE purchases (
 --ALTER TABLE users MODIFY COLUMN verification_status ENUM('pending', 'approved', 'rejected') DEFAULT NULL;
 --ALTER TABLE meals ADD COLUMN image VARCHAR(255) NULL;
 --ALTER TABLE users ADD COLUMN role ENUM('regular', 'chef', 'admin') NOT NULL DEFAULT 'regular';
+-- AlTER TABLE users ADD COLUMN id_document VARCHAR(255) NULL;
 
 -- Create reviews table
 CREATE TABLE IF NOT EXISTS reviews (
