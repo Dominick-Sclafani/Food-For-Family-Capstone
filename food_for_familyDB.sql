@@ -7,12 +7,13 @@ CREATE TABLE IF NOT EXISTS users  (
     password VARCHAR(255) NOT NULL,
     Account_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     verification_status ENUM('pending', 'approved', 'rejected'),
-    role ENUM('regular', 'chef', 'admin') NOT NULL DEFAULT 'regular'
+    role ENUM('regular', 'chef', 'admin') NOT NULL DEFAULT 'regular',
+    id_document VARCHAR(255) NULL
 );
 
 CREATE TABLE IF NOT EXISTS meals (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT UNSIGNED NOT NULL,
+    user_id INT UNSIGNED NO T NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     ingredients TEXT NOT NULL,
@@ -30,7 +31,7 @@ CREATE TABLE purchases (
   meal_id int NOT NULL,
   purchase_time datetime DEFAULT NULL,
   PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 
 --all the sql alterations we do 
@@ -41,3 +42,19 @@ CREATE TABLE purchases (
 --ALTER TABLE users MODIFY COLUMN verification_status ENUM('pending', 'approved', 'rejected') DEFAULT NULL;
 --ALTER TABLE meals ADD COLUMN image VARCHAR(255) NULL;
 --ALTER TABLE users ADD COLUMN role ENUM('regular', 'chef', 'admin') NOT NULL DEFAULT 'regular';
+-- AlTER TABLE users ADD COLUMN id_document VARCHAR(255) NULL;
+
+-- Create reviews table
+CREATE TABLE IF NOT EXISTS reviews (
+    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id INT(10) UNSIGNED NOT NULL,
+    chef_id INT(10) UNSIGNED NOT NULL,
+    purchase_id INT(10) UNSIGNED NOT NULL,
+    rating INT(1) NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    comment TEXT,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (chef_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

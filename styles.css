@@ -37,11 +37,74 @@ body {
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    height: 100%; /* Ensure all cards have the same height */
+    display: flex;
+    flex-direction: column;
 }
 
-/* Meal images should be responsive */
-.card img {
+/* Meal images should be responsive and consistent */
+.card-img-top {
     width: 100%;
-    height: auto;
+    height: 200px; /* Fixed height for images */
+    object-fit: cover; /* This ensures the image covers the area without distortion */
     border-bottom: 2px solid #ddd;
+}
+
+/* Card body should take remaining space */
+.card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Card text should take remaining space */
+.card-text {
+    flex: 1;
+}
+
+/* Review Form Styles */
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    font-size: 35px;
+    color: #ddd;
+    padding: 5px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.rating input:checked~label,
+.rating label:hover,
+.rating label:hover~label {
+    color: #ffd700;
+}
+
+/* Review Display Styles */
+.rating-display {
+    color: #ffd700;
+    font-size: 20px;
+}
+
+.rating-display .star.empty {
+    color: #ddd;
+}
+
+.review-item:last-child {
+    border-bottom: none !important;
+}
+
+.review-item {
+    transition: background-color 0.2s ease;
+}
+
+.review-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
 }
