@@ -22,8 +22,8 @@
     </div>
 
     <div class="mb-3">
-      <label for="id_upload" class="form-label">Upload an ID with Date Of Birth</label>
-      <input type="file" class="form-control" name="id_upload" accept="image/*,.pdf" required>
+      <label for="id_document" class="form-label">Upload an ID with Date Of Birth</label>
+      <input type="file" class="form-control" name="id_document" accept="image/*,.pdf" required>
     </div>
 
     <button type="submit" class="btn btn-primary">Submit Application</button>

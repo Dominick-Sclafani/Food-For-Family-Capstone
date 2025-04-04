@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS users  (
     password VARCHAR(255) NOT NULL,
     Account_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     verification_status ENUM('pending', 'approved', 'rejected'),
-    role ENUM('regular', 'chef', 'admin') NOT NULL DEFAULT 'regular'
+    role ENUM('regular', 'chef', 'admin') NOT NULL DEFAULT 'regular',
+    id_document VARCHAR(255) NULL
 );
 
 CREATE TABLE IF NOT EXISTS meals (

@@ -9,8 +9,12 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "admin") {
 }
 
 
-// Fetch pending chefs
-$result = $conn->query("SELECT id, username FROM users WHERE verification_status = 'pending'");
+// Fetch pending chefs with their ID documents
+$result = $conn->query("
+    SELECT id, username, id_document 
+    FROM users 
+    WHERE verification_status = 'pending'
+");
 ?>
 
 <?php
@@ -78,6 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <thead class="table-dark">
                         <tr>
                             <th>Username</th>
+                            <th>ID Document</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -85,6 +90,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
                                 <td><?= htmlspecialchars($row['username']); ?></td>
+                                <td>
+                                    <?php if (!empty($row['id_document'])): ?>
+                                        <a href="uploads/ids/<?= htmlspecialchars($row['id_document']); ?>" target="_blank"
+                                            class="btn btn-info btn-sm">
+                                            View ID Document
+                                        </a>
+                                    <?php else: ?>
+                                        <span class="text-muted">No ID document uploaded</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td>
                                     <form method="POST" class="d-inline">
                                         <input type="hidden" name="chef_id" value="<?= $row['id']; ?>">
