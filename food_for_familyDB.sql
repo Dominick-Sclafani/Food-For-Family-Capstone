@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users  (
 
 CREATE TABLE IF NOT EXISTS meals (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT UNSIGNED NOT NULL,
+    user_id INT UNSIGNED NO T NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     ingredients TEXT NOT NULL,
