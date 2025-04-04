@@ -1,6 +1,7 @@
 <?php
 session_start();
-include('db.php');
+include('../db.php');
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION["user_id"])) {
     $user_id = $_SESSION["user_id"];
