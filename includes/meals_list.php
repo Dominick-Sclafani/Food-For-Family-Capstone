@@ -10,40 +10,80 @@ if (isset($_SESSION["user_id"])) {
         $userLng = $_SESSION["user_lng"];
     }
 }
+
+// Get sort option from URL parameter
+$sort_option = isset($_GET['sort']) ? $_GET['sort'] : 'recent';
 ?>
 
 <div class="container mt-5">
     <h2 class="text-center">Available Meals</h2>
 
+    <!-- Sorting Dropdown -->
+    <div class="row mb-4">
+        <div class="col-md-6 offset-md-3">
+            <form method="GET" class="d-flex gap-2">
+                <select name="sort" class="form-select" onchange="this.form.submit()">
+                    <option value="recent" <?= $sort_option === 'recent' ? 'selected' : '' ?>>Most Recent</option>
+                    <option value="distance" <?= $sort_option === 'distance' ? 'selected' : '' ?>>Distance (Closest First)
+                    </option>
+                    <option value="rating" <?= $sort_option === 'rating' ? 'selected' : '' ?>>Highest Rated Chefs</option>
+                    <option value="price_low" <?= $sort_option === 'price_low' ? 'selected' : '' ?>>Price (Low to High)
+                    </option>
+                    <option value="price_high" <?= $sort_option === 'price_high' ? 'selected' : '' ?>>Price (High to Low)
+                    </option>
+                </select>
+            </form>
+        </div>
+    </div>
+
     <div class="row">
         <?php
         // Base query to get all meals
         $query = "
-            SELECT m.id, m.title, m.image, m.timestamp, m.user_id, m.pickup_location, u.username 
+            SELECT m.*, u.username, 
+                   COALESCE(AVG(r.rating), 0) as avg_rating
             FROM meals m 
             JOIN users u ON m.user_id = u.id 
+            LEFT JOIN reviews r ON r.chef_id = u.id
+            GROUP BY m.id
         ";
 
-        // If we have user's location, calculate distances
-        if ($userLat !== null && $userLng !== null) {
-            // Add distance-based ordering
-            $query .= " ORDER BY 
-                CASE 
-                    WHEN pickup_location LIKE '%,%' THEN 
-                        (6371 * acos(
-                            cos(radians(?)) * cos(radians(SUBSTRING_INDEX(pickup_location, ',', 1))) * 
-                            cos(radians(SUBSTRING_INDEX(pickup_location, ',', -1)) - radians(?)) + 
-                            sin(radians(?)) * sin(radians(SUBSTRING_INDEX(pickup_location, ',', 1)))
-                        )) * 0.621371
-                    ELSE 999999
-                END ASC
-            ";
-
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("ddd", $userLat, $userLng, $userLat);
-        } else {
-            $query .= " ORDER BY m.timestamp DESC";
-            $stmt = $conn->prepare($query);
+        // Add sorting based on selected option
+        switch ($sort_option) {
+            case 'distance':
+                if ($userLat !== null && $userLng !== null) {
+                    $query .= " ORDER BY 
+                        CASE 
+                            WHEN pickup_location LIKE '%,%' THEN 
+                                (6371 * acos(
+                                    cos(radians(?)) * cos(radians(SUBSTRING_INDEX(pickup_location, ',', 1))) * 
+                                    cos(radians(SUBSTRING_INDEX(pickup_location, ',', -1)) - radians(?)) + 
+                                    sin(radians(?)) * sin(radians(SUBSTRING_INDEX(pickup_location, ',', 1)))
+                                )) * 0.621371
+                            ELSE 999999
+                        END ASC";
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("ddd", $userLat, $userLng, $userLat);
+                } else {
+                    $query .= " ORDER BY m.timestamp DESC";
+                    $stmt = $conn->prepare($query);
+                }
+                break;
+            case 'rating':
+                $query .= " ORDER BY avg_rating DESC, m.timestamp DESC";
+                $stmt = $conn->prepare($query);
+                break;
+            case 'price_low':
+                $query .= " ORDER BY m.price ASC, m.timestamp DESC";
+                $stmt = $conn->prepare($query);
+                break;
+            case 'price_high':
+                $query .= " ORDER BY m.price DESC, m.timestamp DESC";
+                $stmt = $conn->prepare($query);
+                break;
+            default: // recent
+                $query .= " ORDER BY m.timestamp DESC";
+                $stmt = $conn->prepare($query);
         }
 
         $stmt->execute();
@@ -86,6 +126,16 @@ if (isset($_SESSION["user_id"])) {
                                     <span class="text-success"><?= number_format($distance, 1) ?> miles away</span>
                                 </p>
                             <?php endif; ?>
+                            <p class="card-text">
+                                <strong>Rating:</strong>
+                                <?php
+                                $rating = number_format($row['avg_rating'], 1);
+                                echo $rating > 0 ? $rating . '/5' : 'No ratings yet';
+                                ?>
+                            </p>
+                            <p class="card-text">
+                                <strong>Price:</strong> $<?= number_format($row["price"], 2) ?>
+                            </p>
                             <p class="card-text"><small class="text-muted">Posted on <?= $row["timestamp"]; ?></small></p>
                         </div>
                     </div>

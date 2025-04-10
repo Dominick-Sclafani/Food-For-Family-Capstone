@@ -27,13 +27,6 @@
               <li><a class="dropdown-item text-danger" href="logout.php">Logout</a></li>
             </ul>
           </li>
-        <?php else: ?>
-          <li class="nav-item">
-            <a class="nav-link" href="login.php">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="register.php">Register</a>
-          </li>
         <?php endif; ?>
       </ul>
     </div>
