@@ -15,7 +15,7 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $meal_id = intval(value: $_GET['id']);
 
 // Get meal details
-$stmt = $conn->prepare("SELECT * FROM meals WHERE id = ?");
+$stmt = $conn->prepare("SELECT m.*, u.username, m.pickup_location as address FROM meals m JOIN users u ON m.user_id = u.id WHERE m.id = ?");
 $stmt->bind_param("i", $meal_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -40,10 +40,29 @@ if (isset($_SESSION["user_id"])) {
   $checkPurchase->close();
 }
 
-// Prepare pickup coordinates
-$coords = explode(",", $meal["pickup_location"]);
+// Prepare pickup coordinates and address
+$coords = explode(",", $meal["address"]);
 $pickupLat = isset($coords[0]) ? floatval($coords[0]) : 0;
 $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
+
+// Get formatted address from coordinates using Nominatim
+$formatted_address = "";
+if ($pickupLat != 0 && $pickupLng != 0) {
+  $url = "https://nominatim.openstreetmap.org/reverse?format=json&lat={$pickupLat}&lon={$pickupLng}";
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_USERAGENT, 'FoodForFamily');
+  $response = curl_exec($ch);
+  curl_close($ch);
+
+  if ($response) {
+    $data = json_decode($response, true);
+    if (isset($data['display_name'])) {
+      $formatted_address = $data['display_name'];
+    }
+  }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -98,6 +117,18 @@ $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
                 </div>
               <?php endif;
 
+              // Add edit and delete buttons for the meal's chef
+              if ($_SESSION["user_id"] == $meal["user_id"]): ?>
+                <div class="mt-3">
+                  <a href="edit_meal.php?id=<?= $meal_id ?>" class="btn btn-primary w-100 mb-2">Edit Meal</a>
+                  <form method="POST" action="includes/delete_meal.php"
+                    onsubmit="return confirm('Are you sure you want to delete this meal? This action cannot be undone.');">
+                    <input type="hidden" name="meal_id" value="<?= $meal_id ?>">
+                    <button type="submit" class="btn btn-danger w-100">Delete Meal</button>
+                  </form>
+                </div>
+              <?php endif;
+
               $check_purchase->close();
             }
             ?>
@@ -129,7 +160,7 @@ $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
             <div class="card shadow-sm">
               <div class="card-body">
                 <h5 class="card-title">Pickup Information</h5>
-                <p><strong>Pickup Location:</strong> <?= htmlspecialchars($meal["pickup_location"]); ?></p>
+                <p><strong>Pickup Location:</strong> <?= htmlspecialchars($formatted_address); ?></p>
                 <h5>Pickup Location Map</h5>
                 <div id="map" style="height: 300px;"></div>
                 <p id="distance-info" class="mt-3 fw-semibold text-primary"></p>
@@ -143,14 +174,34 @@ $pickupLng = isset($coords[1]) ? floatval($coords[1]) : 0;
                     maxZoom: 19
                   }).addTo(map);
 
-                  L.marker([pickupLat, pickupLng]).addTo(map).bindPopup("Pickup Location").openPopup();
+                  // Custom marker icon for pickup location
+                  const pickupIcon = L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                  });
+
+                  L.marker([pickupLat, pickupLng], { icon: pickupIcon }).addTo(map);
 
                   if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(position => {
                       const userLat = position.coords.latitude;
                       const userLng = position.coords.longitude;
 
-                      L.marker([userLat, userLng]).addTo(map).bindPopup("Your Location");
+                      // Custom marker icon for user location
+                      const userIcon = L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                      });
+
+                      L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
                       L.polyline([[userLat, userLng], [pickupLat, pickupLng]], { color: 'blue' }).addTo(map);
                       const distance = map.distance([userLat, userLng], [pickupLat, pickupLng]) / 1609.34;
                       document.getElementById("distance-info").innerText = `Distance to pickup: ${distance.toFixed(2)} miles`;
