@@ -32,3 +32,5 @@
     </div>
   </div>
 </nav>
+
+<?php include('warning_handler.php'); ?>

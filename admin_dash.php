@@ -36,33 +36,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["chef_id"])) {
     if (isset($_POST["send_warning"])) {
         $reason = trim($_POST["warning_reason"]);
         if (!empty($reason)) {
-            // Store warning in session
-            if (!isset($_SESSION["chef_warnings"][$chef_id])) {
-                $_SESSION["chef_warnings"][$chef_id] = array();
-            }
-            $_SESSION["chef_warnings"][$chef_id][] = array(
-                "reason" => $reason,
-                "date" => date("Y-m-d H:i:s"),
-                "admin_id" => $admin_id
-            );
+            // Store warning in database
+            $stmt = $conn->prepare("INSERT INTO chef_warnings (chef_id, admin_id, reason) VALUES (?, ?, ?)");
+            $stmt->bind_param("iis", $chef_id, $admin_id, $reason);
 
-            $_SESSION["success"] = "Warning sent successfully.";
+            if ($stmt->execute()) {
+                $_SESSION["success"] = "Warning sent successfully.";
+            } else {
+                $_SESSION["error"] = "Failed to send warning.";
+            }
+            $stmt->close();
         }
     } elseif (isset($_POST["suspend_chef"])) {
-        $stmt = $conn->prepare("UPDATE users SET verification_status = 'suspended' WHERE id = ?");
+        // Delete the user's account and all associated data
+        $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
         $stmt->bind_param("i", $chef_id);
         if ($stmt->execute()) {
-            $_SESSION["success"] = "Chef suspended successfully.";
+            $_SESSION["success"] = "Chef account has been permanently deleted.";
         } else {
-            $_SESSION["error"] = "Failed to suspend chef.";
+            $_SESSION["error"] = "Failed to delete chef account.";
         }
         $stmt->close();
     } elseif (isset($_POST["reinstate_chef"])) {
         $stmt = $conn->prepare("UPDATE users SET verification_status = 'approved' WHERE id = ?");
         $stmt->bind_param("i", $chef_id);
         if ($stmt->execute()) {
-            // Clear warnings for reinstated chef
-            unset($_SESSION["chef_warnings"][$chef_id]);
             $_SESSION["success"] = "Chef reinstated successfully.";
         } else {
             $_SESSION["error"] = "Failed to reinstate chef.";
@@ -104,13 +102,27 @@ $concerned_chefs = $conn->query("
         SUM(CASE WHEN r.rating = 4 THEN 1 ELSE 0 END) as four_star_ratings,
         SUM(CASE WHEN r.rating = 5 THEN 1 ELSE 0 END) as five_star_ratings,
         MIN(r.timestamp) as first_review,
-        MAX(r.timestamp) as last_review
+        MAX(r.timestamp) as last_review,
+        (SELECT COUNT(*) FROM chef_warnings WHERE chef_id = u.id AND is_dismissed = FALSE) as warning_count
     FROM users u
     LEFT JOIN reviews r ON r.chef_id = u.id
-    WHERE u.role = 'chef'
+    WHERE u.role = 'chef' AND u.verification_status != 'suspended'
     GROUP BY u.id, u.username, u.verification_status
     HAVING total_reviews >= 3 AND (avg_rating < 3 OR low_ratings >= 2)
     ORDER BY avg_rating ASC
+");
+
+// Fetch recent warnings
+$recent_warnings = $conn->query("
+    SELECT 
+        cw.*,
+        u1.username as chef_name,
+        u2.username as admin_name
+    FROM chef_warnings cw
+    JOIN users u1 ON cw.chef_id = u1.id
+    JOIN users u2 ON cw.admin_id = u2.id
+    ORDER BY cw.warning_date DESC
+    LIMIT 10
 ");
 
 // Fetch recent reviews
@@ -202,7 +214,7 @@ $recent_reviews = $conn->query("
                                                 <?= ucfirst($chef['verification_status']); ?>
                                             </span>
                                         </td>
-                                        <td><?= $warning_count; ?></td>
+                                        <td><?= $chef['warning_count']; ?></td>
                                         <td><?= $chef['total_reviews']; ?></td>
                                         <td><?= number_format($chef['avg_rating'], 1); ?>/5</td>
                                         <td>
@@ -216,7 +228,7 @@ $recent_reviews = $conn->query("
                                         </td>
                                         <td>
                                             <?= date("m/d/Y", strtotime($chef['first_review'])); ?> -
-                                            <?= date("m/d/Y", strtot($chef['last_review'])); ?>
+                                            <?= date("m/d/Y", strtotime($chef['last_review'])); ?>
                                         </td>
                                         <td>
                                             <div class="d-flex gap-2">
@@ -224,16 +236,19 @@ $recent_reviews = $conn->query("
                                                     View Profile
                                                 </a>
                                                 <?php if ($chef['verification_status'] !== 'suspended'): ?>
-                                                    <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                                        data-bs-target="#warningModal<?= $chef['id']; ?>">
-                                                        Send Warning
-                                                    </button>
-                                                    <?php if ($warning_count >= 2): ?>
+                                                    <?php if ($chef['warning_count'] < 1): ?>
+                                                        <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                                            data-bs-target="#warningModal<?= $chef['id']; ?>"
+                                                            <?= $chef['warning_count'] >= 1 ? 'disabled' : '' ?>>
+                                                            Send Warning
+                                                        </button>
+                                                    <?php endif; ?>
+                                                    <?php if ($chef['warning_count'] >= 1): ?>
                                                         <form method="POST" class="d-inline">
                                                             <input type="hidden" name="chef_id" value="<?= $chef['id']; ?>">
                                                             <button type="submit" name="suspend_chef" class="btn btn-danger btn-sm"
-                                                                onclick="return confirm('Are you sure you want to suspend this chef?');">
-                                                                Suspend
+                                                                onclick="return confirm('Are you sure you want to permanently delete this chef\'s account? This action cannot be undone.');">
+                                                                Delete Account
                                                             </button>
                                                         </form>
                                                     <?php endif; ?>
@@ -254,7 +269,8 @@ $recent_reviews = $conn->query("
                                                     <div class="modal-content">
                                                         <div class="modal-header">
                                                             <h5 class="modal-title">Send Warning to
-                                                                <?= htmlspecialchars($chef['username']); ?></h5>
+                                                                <?= htmlspecialchars($chef['username']); ?>
+                                                            </h5>
                                                             <button type="button" class="btn-close"
                                                                 data-bs-dismiss="modal"></button>
                                                         </div>
