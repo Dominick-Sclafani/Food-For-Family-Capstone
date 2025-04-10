@@ -6,9 +6,10 @@ CREATE TABLE IF NOT EXISTS users  (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     Account_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    verification_status ENUM('pending', 'approved', 'rejected'),
+    verification_status ENUM('pending', 'approved', 'rejected', 'suspended') DEFAULT NULL,
     role ENUM('regular', 'chef', 'admin') NOT NULL DEFAULT 'regular',
-    id_document VARCHAR(255) NULL
+    id_document VARCHAR(255) NULL,
+    warning_count INT DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS meals (
@@ -57,4 +58,15 @@ CREATE TABLE IF NOT EXISTS reviews (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (chef_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+);
+
+-- Create warnings table
+CREATE TABLE IF NOT EXISTS chef_warnings (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    chef_id INT UNSIGNED NOT NULL,
+    admin_id INT UNSIGNED NOT NULL,
+    reason TEXT NOT NULL,
+    warning_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chef_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE CASCADE
+);

@@ -16,18 +16,32 @@
             <textarea class="form-control" name="description" required></textarea>
         </div>
 
+        <div class="mb-3">
+            <label class="form-label">Ingredients</label>
+            <textarea class="form-control" name="ingredients"></textarea>
+        </div>
+
         <!-- Allergen Dropdown -->
         <div class="mb-3">
             <label class="form-label">Common Allergens</label>
             <div class="d-flex flex-wrap">
                 <?php
                 $allergens = [
-                    "Peanuts", "Tree Nuts", "Dairy", "Eggs", "Shellfish",
-                    "Fish", "Soy", "Wheat", "Sesame", "Gluten"
+                    "Peanuts",
+                    "Tree Nuts",
+                    "Dairy",
+                    "Eggs",
+                    "Shellfish",
+                    "Fish",
+                    "Soy",
+                    "Wheat",
+                    "Sesame",
+                    "Gluten"
                 ];
                 foreach ($allergens as $allergen): ?>
                     <div class="form-check m-2">
-                        <input class="form-check-input" type="checkbox" name="allergens[]" value="<?= $allergen ?>" id="<?= strtolower(str_replace(' ', '-', $allergen)); ?>">
+                        <input class="form-check-input" type="checkbox" name="allergens[]" value="<?= $allergen ?>"
+                            id="<?= strtolower(str_replace(' ', '-', $allergen)); ?>">
                         <label class="form-check-label" for="<?= strtolower(str_replace(' ', '-', $allergen)); ?>">
                             <?= $allergen ?>
                         </label>
