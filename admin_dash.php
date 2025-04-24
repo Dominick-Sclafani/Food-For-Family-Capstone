@@ -33,7 +33,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["chef_id"])) {
     $chef_id = $_POST["chef_id"];
     $admin_id = $_SESSION["user_id"];
 
-    if (isset($_POST["send_warning"])) {
+    if (isset($_POST["approve"])) {
+        $stmt = $conn->prepare("UPDATE users SET verification_status = 'approved' WHERE id = ?");
+        $stmt->bind_param("i", $chef_id);
+        if ($stmt->execute()) {
+            $_SESSION["success"] = "Chef application approved successfully.";
+        } else {
+            $_SESSION["error"] = "Failed to approve chef application.";
+        }
+        $stmt->close();
+    } elseif (isset($_POST["reject"])) {
+        $stmt = $conn->prepare("UPDATE users SET verification_status = 'rejected' WHERE id = ?");
+        $stmt->bind_param("i", $chef_id);
+        if ($stmt->execute()) {
+            $_SESSION["success"] = "Chef application rejected successfully.";
+        } else {
+            $_SESSION["error"] = "Failed to reject chef application.";
+        }
+        $stmt->close();
+    } elseif (isset($_POST["send_warning"])) {
         $reason = trim($_POST["warning_reason"]);
         if (!empty($reason)) {
             // Store warning in database
@@ -422,6 +440,7 @@ $recent_reviews = $conn->query("
                                         <button type="submit" name="approve" class="btn btn-success btn-sm">
                                             Approve
                                         </button>
+                                        
                                         <button type="submit" name="reject" class="btn btn-danger btn-sm">
                                             Reject
                                         </button>
@@ -435,6 +454,7 @@ $recent_reviews = $conn->query("
                 <p class="text-center text-muted">No pending chef applications.</p>
             <?php endif; ?>
         </div>
+        
 
         <!-- All Posts Section -->
         <div class="card shadow-lg p-4">
