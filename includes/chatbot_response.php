@@ -2,14 +2,14 @@
 session_start();
 require_once('../db.php');
 
-// Your Gemini API key
+// Gemini API key
 $api_key = 'AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['message'])) {
     $userMessage = $_POST['message'];
 
     // System message to set the context
-    $systemMessage = "You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality. If you're unsure about something, suggest contacting support.";
+    $systemMessage = "You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality.";
 
     // Prepare the API request
     $data = [

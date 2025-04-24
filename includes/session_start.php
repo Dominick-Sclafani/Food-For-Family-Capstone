@@ -10,7 +10,7 @@ if (isset($_SESSION["user_id"])) {
     $stmt->fetch();
     $stmt->close();
 
-    // Store into session for consistent access
+    //Store into session for consistent access
     $_SESSION["role"] = $role;
     $_SESSION["verification_status"] = $verification_status;
 }
