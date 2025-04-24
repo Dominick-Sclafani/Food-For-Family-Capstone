@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS users  (
     verification_status ENUM('pending', 'approved', 'rejected', 'suspended') DEFAULT NULL,
     role ENUM('regular', 'chef', 'admin') NOT NULL DEFAULT 'regular',
     id_document VARCHAR(255) NULL,
-    warning_count INT DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS meals (

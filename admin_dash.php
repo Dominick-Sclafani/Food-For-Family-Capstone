@@ -1,7 +1,8 @@
 <?php
-ob_start();
 session_start();
 require "db.php";
+
+include('includes/header.php');
 
 // Ensure only admins can access this page
 if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "admin") {
@@ -33,25 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["chef_id"])) {
     $chef_id = $_POST["chef_id"];
     $admin_id = $_SESSION["user_id"];
 
-    if (isset($_POST["approve"])) {
-        $stmt = $conn->prepare("UPDATE users SET verification_status = 'approved' WHERE id = ?");
-        $stmt->bind_param("i", $chef_id);
-        if ($stmt->execute()) {
-            $_SESSION["success"] = "Chef application approved successfully.";
-        } else {
-            $_SESSION["error"] = "Failed to approve chef application.";
-        }
-        $stmt->close();
-    } elseif (isset($_POST["reject"])) {
-        $stmt = $conn->prepare("UPDATE users SET verification_status = 'rejected' WHERE id = ?");
-        $stmt->bind_param("i", $chef_id);
-        if ($stmt->execute()) {
-            $_SESSION["success"] = "Chef application rejected successfully.";
-        } else {
-            $_SESSION["error"] = "Failed to reject chef application.";
-        }
-        $stmt->close();
-    } elseif (isset($_POST["send_warning"])) {
+    if (isset($_POST["send_warning"])) {
         $reason = trim($_POST["warning_reason"]);
         if (!empty($reason)) {
             // Store warning in database
@@ -171,26 +154,6 @@ $recent_reviews = $conn->query("
 </head>
 
 <body class="bg-light">
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">Food For Family - Admin</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" href="logout.php">Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
     <!-- Main Content -->
     <div class="container mt-5">

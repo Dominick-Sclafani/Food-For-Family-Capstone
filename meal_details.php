@@ -2,7 +2,7 @@
 session_start();
 require "db.php";
 
-include('includes/navbar.php');
+include('includes/header.php');
 
 
 // Check if a meal ID was provided

@@ -2,6 +2,8 @@
 session_start();
 require "db.php";
 
+include('includes/header.php');
+
 // Get the user ID from URL parameter, or use logged-in user's ID
 $profile_id = isset($_GET['id']) ? intval($_GET['id']) : $_SESSION['user_id'];
 

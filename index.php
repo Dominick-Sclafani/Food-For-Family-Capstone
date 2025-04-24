@@ -1,6 +1,5 @@
 <?php include('includes/session_start.php'); ?>
 <?php include('includes/header.php'); ?>
-<?php include('includes/navbar.php'); ?>
 
 <div class="container mt-5">
     <?php include('includes/messages.php'); ?>
