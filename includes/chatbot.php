@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Start output buffering
 // Chatbot Interface
 ?>
 <div class="chatbot-container">
