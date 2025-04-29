@@ -45,8 +45,6 @@ if (!isset($_SESSION["user_id"]) && !$is_own_profile) {
 </head>
 
 <body class="bg-light">
-    <?php include 'includes/navbar.php'; ?>
-
     <div class="container py-5">
         <!-- Profile Header -->
         <div class="row mb-4">

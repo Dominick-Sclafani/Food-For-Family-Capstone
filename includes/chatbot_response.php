@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['message'])) {
     $userMessage = $_POST['message'];
 
     // System message to set the context
-    $Prompt = "You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality.";
+    $Prompt = "You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses short and concise and focused on the website's functionality.";
 
     // Prepare the API request
     $data = [
