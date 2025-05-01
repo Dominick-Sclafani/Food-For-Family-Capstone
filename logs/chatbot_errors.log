@@ -1,0 +1,658 @@
+2025-04-24 23:39:48 - Gemini API Request Details:
+Request URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+Request Data: {"contents":[{"role":"user","parts":[{"text":"You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality. If you're unsure about something, suggest contacting support.\n\nhello"}]}],"generationConfig":{"temperature":0.7,"maxOutputTokens":150}}
+HTTP Code: 404
+cURL Error: 
+Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+Verbose Log: *   Trying [2607:f8b0:4006:80f::200a]:443...
+* Connected to generativelanguage.googleapis.com (2607:f8b0:4006:80f::200a) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=upload.video.google.com
+*  start date: Mar 31 08:55:43 2025 GMT
+*  expire date: Jun 23 08:55:42 2025 GMT
+*  subjectAltName: host "generativelanguage.googleapis.com" matched cert's "*.googleapis.com"
+*  issuer: C=US; O=Google Trust Services; CN=WE2
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: generativelanguage.googleapis.com]
+* [HTTP/2] [1] [:path: /v1beta/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [content-length: 427]
+> POST /v1beta/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0 HTTP/2
+Host: generativelanguage.googleapis.com
+Accept: */*
+Content-Type: application/json
+Content-Length: 427
+
+* old SSL session ID is stale, removing
+< HTTP/2 404 
+< vary: X-Origin
+< vary: Referer
+< vary: Origin,Accept-Encoding
+< content-type: application/json; charset=UTF-8
+< date: Thu, 24 Apr 2025 21:39:48 GMT
+< server: scaffolding on HTTPServer2
+< x-xss-protection: 0
+< x-frame-options: SAMEORIGIN
+< x-content-type-options: nosniff
+< server-timing: gfet4t7; dur=79
+< alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+< accept-ranges: none
+< 
+* Connection #0 to host generativelanguage.googleapis.com left intact
+
+----------------------------------------
+[24-Apr-2025 23:39:48 Europe/Berlin] Gemini API Error - HTTP Code: 404 - Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-04-24 23:41:23 - Gemini API Request Details:
+Request URL: https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+Request Data: {"contents":[{"role":"user","parts":[{"text":"You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality. If you're unsure about something, suggest contacting support.\n\nHello"}]}],"generationConfig":{"temperature":0.7,"maxOutputTokens":150}}
+HTTP Code: 404
+cURL Error: 
+Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.0-pro is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+Verbose Log: *   Trying [2607:f8b0:4006:822::200a]:443...
+* Connected to generativelanguage.googleapis.com (2607:f8b0:4006:822::200a) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=upload.video.google.com
+*  start date: Mar 31 08:55:43 2025 GMT
+*  expire date: Jun 23 08:55:42 2025 GMT
+*  subjectAltName: host "generativelanguage.googleapis.com" matched cert's "*.googleapis.com"
+*  issuer: C=US; O=Google Trust Services; CN=WE2
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: generativelanguage.googleapis.com]
+* [HTTP/2] [1] [:path: /v1/models/gemini-1.0-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [content-length: 427]
+> POST /v1/models/gemini-1.0-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0 HTTP/2
+Host: generativelanguage.googleapis.com
+Accept: */*
+Content-Type: application/json
+Content-Length: 427
+
+* old SSL session ID is stale, removing
+< HTTP/2 404 
+< vary: X-Origin
+< vary: Referer
+< vary: Origin,Accept-Encoding
+< content-type: application/json; charset=UTF-8
+< date: Thu, 24 Apr 2025 21:41:24 GMT
+< server: scaffolding on HTTPServer2
+< x-xss-protection: 0
+< x-frame-options: SAMEORIGIN
+< x-content-type-options: nosniff
+< server-timing: gfet4t7; dur=74
+< alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+< accept-ranges: none
+< 
+* Connection #0 to host generativelanguage.googleapis.com left intact
+
+----------------------------------------
+[24-Apr-2025 23:41:23 Europe/Berlin] Gemini API Error - HTTP Code: 404 - Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.0-pro is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-04-24 23:42:18 - Gemini API Request Details:
+Request URL: https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+Request Data: {"contents":[{"role":"user","parts":[{"text":"You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality. If you're unsure about something, suggest contacting support.\n\nhello"}]}],"generationConfig":{"temperature":0.7,"maxOutputTokens":150}}
+HTTP Code: 404
+cURL Error: 
+Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+Verbose Log: *   Trying [2607:f8b0:4006:822::200a]:443...
+* Connected to generativelanguage.googleapis.com (2607:f8b0:4006:822::200a) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=upload.video.google.com
+*  start date: Mar 31 08:55:43 2025 GMT
+*  expire date: Jun 23 08:55:42 2025 GMT
+*  subjectAltName: host "generativelanguage.googleapis.com" matched cert's "*.googleapis.com"
+*  issuer: C=US; O=Google Trust Services; CN=WE2
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: generativelanguage.googleapis.com]
+* [HTTP/2] [1] [:path: /v1/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [content-length: 427]
+> POST /v1/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0 HTTP/2
+Host: generativelanguage.googleapis.com
+Accept: */*
+Content-Type: application/json
+Content-Length: 427
+
+* old SSL session ID is stale, removing
+< HTTP/2 404 
+< vary: X-Origin
+< vary: Referer
+< vary: Origin,Accept-Encoding
+< content-type: application/json; charset=UTF-8
+< date: Thu, 24 Apr 2025 21:42:19 GMT
+< server: scaffolding on HTTPServer2
+< x-xss-protection: 0
+< x-frame-options: SAMEORIGIN
+< x-content-type-options: nosniff
+< server-timing: gfet4t7; dur=68
+< alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+< accept-ranges: none
+< 
+* Connection #0 to host generativelanguage.googleapis.com left intact
+
+----------------------------------------
+[24-Apr-2025 23:42:18 Europe/Berlin] Gemini API Error - HTTP Code: 404 - Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-04-24 23:42:33 - Gemini API Request Details:
+Request URL: https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+Request Data: {"contents":[{"role":"user","parts":[{"text":"You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality. If you're unsure about something, suggest contacting support.\n\nhello"}]}],"generationConfig":{"temperature":0.7,"maxOutputTokens":150}}
+HTTP Code: 404
+cURL Error: 
+Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+Verbose Log: *   Trying [2607:f8b0:4006:822::200a]:443...
+* Connected to generativelanguage.googleapis.com (2607:f8b0:4006:822::200a) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=upload.video.google.com
+*  start date: Mar 31 08:55:43 2025 GMT
+*  expire date: Jun 23 08:55:42 2025 GMT
+*  subjectAltName: host "generativelanguage.googleapis.com" matched cert's "*.googleapis.com"
+*  issuer: C=US; O=Google Trust Services; CN=WE2
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: generativelanguage.googleapis.com]
+* [HTTP/2] [1] [:path: /v1/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [content-length: 427]
+> POST /v1/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0 HTTP/2
+Host: generativelanguage.googleapis.com
+Accept: */*
+Content-Type: application/json
+Content-Length: 427
+
+* old SSL session ID is stale, removing
+< HTTP/2 404 
+< vary: X-Origin
+< vary: Referer
+< vary: Origin,Accept-Encoding
+< content-type: application/json; charset=UTF-8
+< date: Thu, 24 Apr 2025 21:42:34 GMT
+< server: scaffolding on HTTPServer2
+< x-xss-protection: 0
+< x-frame-options: SAMEORIGIN
+< x-content-type-options: nosniff
+< server-timing: gfet4t7; dur=70
+< alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+< accept-ranges: none
+< 
+* Connection #0 to host generativelanguage.googleapis.com left intact
+
+----------------------------------------
+[24-Apr-2025 23:42:33 Europe/Berlin] Gemini API Error - HTTP Code: 404 - Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-04-24 23:46:23 - Gemini API Request Details:
+Request URL: https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro-latest:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+Request Data: {"contents":[{"role":"user","parts":[{"text":"You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality. If you're unsure about something, suggest contacting support.\n\nhello"}]}],"generationConfig":{"temperature":0.7,"maxOutputTokens":150}}
+HTTP Code: 404
+cURL Error: 
+Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.0-pro-latest is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+Verbose Log: *   Trying 142.250.80.42:443...
+* Connected to generativelanguage.googleapis.com (142.250.80.42) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=upload.video.google.com
+*  start date: Mar 31 08:55:43 2025 GMT
+*  expire date: Jun 23 08:55:42 2025 GMT
+*  subjectAltName: host "generativelanguage.googleapis.com" matched cert's "*.googleapis.com"
+*  issuer: C=US; O=Google Trust Services; CN=WE2
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro-latest:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: generativelanguage.googleapis.com]
+* [HTTP/2] [1] [:path: /v1/models/gemini-1.0-pro-latest:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [content-length: 427]
+> POST /v1/models/gemini-1.0-pro-latest:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0 HTTP/2
+Host: generativelanguage.googleapis.com
+Accept: */*
+Content-Type: application/json
+Content-Length: 427
+
+* old SSL session ID is stale, removing
+< HTTP/2 404 
+< vary: X-Origin
+< vary: Referer
+< vary: Origin,Accept-Encoding
+< content-type: application/json; charset=UTF-8
+< date: Thu, 24 Apr 2025 21:46:24 GMT
+< server: scaffolding on HTTPServer2
+< x-xss-protection: 0
+< x-frame-options: SAMEORIGIN
+< x-content-type-options: nosniff
+< server-timing: gfet4t7; dur=61
+< alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+< accept-ranges: none
+< 
+* Connection #0 to host generativelanguage.googleapis.com left intact
+
+----------------------------------------
+[24-Apr-2025 23:46:23 Europe/Berlin] Gemini API Error - HTTP Code: 404 - Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.0-pro-latest is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-04-24 23:47:32 - Gemini API Request Details:
+Request URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+Request Data: {"contents":[{"role":"user","parts":[{"text":"You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality. If you're unsure about something, suggest contacting support.\n\nhello"}]}],"generationConfig":{"temperature":0.7,"maxOutputTokens":150}}
+HTTP Code: 404
+cURL Error: 
+Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+Verbose Log: *   Trying 142.250.80.42:443...
+* Connected to generativelanguage.googleapis.com (142.250.80.42) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=upload.video.google.com
+*  start date: Mar 31 08:55:43 2025 GMT
+*  expire date: Jun 23 08:55:42 2025 GMT
+*  subjectAltName: host "generativelanguage.googleapis.com" matched cert's "*.googleapis.com"
+*  issuer: C=US; O=Google Trust Services; CN=WE2
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: generativelanguage.googleapis.com]
+* [HTTP/2] [1] [:path: /v1beta/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [content-length: 427]
+> POST /v1beta/models/gemini-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0 HTTP/2
+Host: generativelanguage.googleapis.com
+Accept: */*
+Content-Type: application/json
+Content-Length: 427
+
+* old SSL session ID is stale, removing
+< HTTP/2 404 
+< vary: X-Origin
+< vary: Referer
+< vary: Origin,Accept-Encoding
+< content-type: application/json; charset=UTF-8
+< date: Thu, 24 Apr 2025 21:47:32 GMT
+< server: scaffolding on HTTPServer2
+< x-xss-protection: 0
+< x-frame-options: SAMEORIGIN
+< x-content-type-options: nosniff
+< server-timing: gfet4t7; dur=61
+< alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+< accept-ranges: none
+< 
+* Connection #0 to host generativelanguage.googleapis.com left intact
+
+----------------------------------------
+[24-Apr-2025 23:47:32 Europe/Berlin] Gemini API Error - HTTP Code: 404 - Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-pro is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-04-24 23:48:09 - Gemini API Request Details:
+Request URL: https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+Request Data: {"contents":[{"role":"user","parts":[{"text":"You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality. If you're unsure about something, suggest contacting support.\n\nhello"}]}],"generationConfig":{"temperature":0.7,"maxOutputTokens":150}}
+HTTP Code: 404
+cURL Error: 
+Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.0-pro is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+Verbose Log: *   Trying 142.250.80.42:443...
+* Connected to generativelanguage.googleapis.com (142.250.80.42) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=upload.video.google.com
+*  start date: Mar 31 08:55:43 2025 GMT
+*  expire date: Jun 23 08:55:42 2025 GMT
+*  subjectAltName: host "generativelanguage.googleapis.com" matched cert's "*.googleapis.com"
+*  issuer: C=US; O=Google Trust Services; CN=WE2
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://generativelanguage.googleapis.com/v1/models/gemini-1.0-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: generativelanguage.googleapis.com]
+* [HTTP/2] [1] [:path: /v1/models/gemini-1.0-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [content-length: 427]
+> POST /v1/models/gemini-1.0-pro:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0 HTTP/2
+Host: generativelanguage.googleapis.com
+Accept: */*
+Content-Type: application/json
+Content-Length: 427
+
+* old SSL session ID is stale, removing
+< HTTP/2 404 
+< vary: X-Origin
+< vary: Referer
+< vary: Origin,Accept-Encoding
+< content-type: application/json; charset=UTF-8
+< date: Thu, 24 Apr 2025 21:48:10 GMT
+< server: scaffolding on HTTPServer2
+< x-xss-protection: 0
+< x-frame-options: SAMEORIGIN
+< x-content-type-options: nosniff
+< server-timing: gfet4t7; dur=71
+< alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+< accept-ranges: none
+< 
+* Connection #0 to host generativelanguage.googleapis.com left intact
+
+----------------------------------------
+[24-Apr-2025 23:48:09 Europe/Berlin] Gemini API Error - HTTP Code: 404 - Response: {
+  "error": {
+    "code": 404,
+    "message": "models/gemini-1.0-pro is not found for API version v1, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.",
+    "status": "NOT_FOUND"
+  }
+}
+
+2025-04-24 23:49:35 - Gemini API Request Details:
+Request URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+Request Data: {"contents":[{"parts":[{"text":"You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality. If you're unsure about something, suggest contacting support.\n\nhello"}]}]}
+HTTP Code: 200
+cURL Error: 
+Response: {
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "Hello! How can I help you with Food For Family today? Are you looking to:\n\n*   Find a meal?\n*   Become a chef and post meals?\n*   Manage your account?\n*   Something else?\n"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "avgLogprobs": -0.19679003345723056
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 63,
+    "candidatesTokenCount": 49,
+    "totalTokenCount": 112,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 63
+      }
+    ],
+    "candidatesTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 49
+      }
+    ]
+  },
+  "modelVersion": "gemini-2.0-flash"
+}
+
+Verbose Log: *   Trying 142.250.80.42:443...
+* Connected to generativelanguage.googleapis.com (142.250.80.42) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=upload.video.google.com
+*  start date: Mar 31 08:55:43 2025 GMT
+*  expire date: Jun 23 08:55:42 2025 GMT
+*  subjectAltName: host "generativelanguage.googleapis.com" matched cert's "*.googleapis.com"
+*  issuer: C=US; O=Google Trust Services; CN=WE2
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: generativelanguage.googleapis.com]
+* [HTTP/2] [1] [:path: /v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [content-length: 352]
+> POST /v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0 HTTP/2
+Host: generativelanguage.googleapis.com
+Accept: */*
+Content-Type: application/json
+Content-Length: 352
+
+* old SSL session ID is stale, removing
+< HTTP/2 200 
+< content-type: application/json; charset=UTF-8
+< vary: X-Origin
+< vary: Referer
+< vary: Origin,Accept-Encoding
+< date: Thu, 24 Apr 2025 21:49:36 GMT
+< server: scaffolding on HTTPServer2
+< x-xss-protection: 0
+< x-frame-options: SAMEORIGIN
+< x-content-type-options: nosniff
+< server-timing: gfet4t7; dur=537
+< alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+< accept-ranges: none
+< 
+* Connection #0 to host generativelanguage.googleapis.com left intact
+
+----------------------------------------
+2025-04-24 23:49:43 - Gemini API Request Details:
+Request URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+Request Data: {"contents":[{"parts":[{"text":"You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality. If you're unsure about something, suggest contacting support.\n\nhow can I post meals?"}]}]}
+HTTP Code: 200
+cURL Error: 
+Response: {
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "To post a meal on Food For Family, you'll need to become a Chef! Here's how:\n\n1.  **Register as a Chef:** Look for a \"Become a Chef\" or \"Chef Registration\" link on the homepage or in your account settings.\n2.  **Create a Meal:** Once you're registered as a Chef, you should see an option to \"Post a Meal,\" \"Add a Meal,\" or similar. Fill out all the required information, including the meal name, description, ingredients, price, and availability.\n3.  **Submit for Approval:** After completing the meal details, submit it. It may need to be reviewed before it's visible on the site.\n\nIf you're having trouble finding these options, please contact our support team for further assistance.\n"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "avgLogprobs": -0.354486760639009
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 68,
+    "candidatesTokenCount": 168,
+    "totalTokenCount": 236,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 68
+      }
+    ],
+    "candidatesTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 168
+      }
+    ]
+  },
+  "modelVersion": "gemini-2.0-flash"
+}
+
+Verbose Log: *   Trying 142.250.80.42:443...
+* Connected to generativelanguage.googleapis.com (142.250.80.42) port 443
+* ALPN: curl offers h2,http/1.1
+*  CAfile: C:\xampp\apache\bin\curl-ca-bundle.crt
+*  CApath: none
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=upload.video.google.com
+*  start date: Mar 31 08:55:43 2025 GMT
+*  expire date: Jun 23 08:55:42 2025 GMT
+*  subjectAltName: host "generativelanguage.googleapis.com" matched cert's "*.googleapis.com"
+*  issuer: C=US; O=Google Trust Services; CN=WE2
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: generativelanguage.googleapis.com]
+* [HTTP/2] [1] [:path: /v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [content-length: 368]
+> POST /v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0 HTTP/2
+Host: generativelanguage.googleapis.com
+Accept: */*
+Content-Type: application/json
+Content-Length: 368
+
+* old SSL session ID is stale, removing
+< HTTP/2 200 
+< content-type: application/json; charset=UTF-8
+< vary: X-Origin
+< vary: Referer
+< vary: Origin,Accept-Encoding
+< date: Thu, 24 Apr 2025 21:49:43 GMT
+< server: scaffolding on HTTPServer2
+< x-xss-protection: 0
+< x-frame-options: SAMEORIGIN
+< x-content-type-options: nosniff
+< server-timing: gfet4t7; dur=1193
+< alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+< accept-ranges: none
+< 
+* Connection #0 to host generativelanguage.googleapis.com left intact
+
+----------------------------------------
+2025-04-24 23:50:36 - Gemini API Request Details:
+Request URL: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyDFp1Y-QYsY73KS6PKCuGWC2m0rCINW8c0
+Request Data: {"contents":[{"parts":[{"text":"You are a helpful assistant for the Food For Family website. Your role is to help users navigate the site, find meals, become chefs, post meals, and manage their accounts. Keep your responses concise and focused on the website's functionality. If you're unsure about something, suggest contacting support.\n\nHello"}]}]}
+HTTP Code: 
+cURL Error: 
+Response: 
+Verbose Log: 
+----------------------------------------
