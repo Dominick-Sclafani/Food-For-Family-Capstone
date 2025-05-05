@@ -14,12 +14,14 @@ CREATE TABLE IF NOT EXISTS users  (
 
 CREATE TABLE IF NOT EXISTS meals (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT UNSIGNED NO T NULL,
+    user_id INT UNSIGNED NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     ingredients TEXT NOT NULL,
     allergies TEXT NOT NULL,
     pickup_location VARCHAR(255) NOT NULL,
+    pickup_time DATETIME NOT NULL,
+    pickup_end_time DATETIME NOT NULL,
     image VARCHAR(255) NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

@@ -8,7 +8,17 @@
 
         <div class="mb-3">
             <label class="form-label">Estimated Time for Pickup</label>
-            <input type="datetime-local" class="form-control" name="pickup_time" required>
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Start Time</label>
+                    <input type="datetime-local" class="form-control" name="pickup_time" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">End Time</label>
+                    <input type="datetime-local" class="form-control" name="pickup_end_time" required>
+                </div>
+            </div>
+            <small class="text-muted">Please set a reasonable time window for customers to pick up their meals</small>
         </div>
 
         <div class="mb-3">

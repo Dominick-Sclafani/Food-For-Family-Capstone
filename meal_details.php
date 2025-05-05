@@ -93,7 +93,10 @@ if ($pickupLat != 0 && $pickupLng != 0) {
             <p><strong>Ingredients:</strong> <?= htmlspecialchars($meal["ingredients"]); ?></p>
             <p><strong>Allergens:</strong>
               <?= !empty($meal["allergies"]) ? htmlspecialchars($meal["allergies"]) : "None"; ?></p>
-            <p><strong>Estimated Pickup Time:</strong> <?= date("m/d/Y, h:i A", strtotime($meal["pickup_time"])); ?></p>
+            <p><strong>Pickup Window:</strong><br>
+              Start: <?= date("m/d/Y, h:i A", strtotime($meal["pickup_time"])); ?><br>
+              End: <?= date("m/d/Y, h:i A", strtotime($meal["pickup_end_time"])); ?>
+            </p>
             <p><strong>Price:</strong> $<?= htmlspecialchars(number_format((float) $meal["price"], 2)); ?></p>
             <p><small class="text-muted">Posted on <?= $meal["timestamp"]; ?></small></p>
           </div>
@@ -155,59 +158,18 @@ if ($pickupLat != 0 && $pickupLng != 0) {
 
         <div class="mt-4">
           <?php if ($canViewPickup): ?>
-            <div class="card shadow-sm">
+            <div class="card mb-4">
               <div class="card-body">
                 <h5 class="card-title">Pickup Information</h5>
-                <p><strong>Pickup Location:</strong> <?= htmlspecialchars($formatted_address); ?></p>
-                <h5>Pickup Location Map</h5>
-                <div id="map" style="height: 300px;"></div>
-                <p id="distance-info" class="mt-3 fw-semibold text-primary"></p>
-
-                <script>
-                  const pickupLat = <?= $pickupLat ?>;
-                  const pickupLng = <?= $pickupLng ?>;
-                  const map = L.map('map').setView([pickupLat, pickupLng], 14);
-
-                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19
-                  }).addTo(map);
-
-                  // Custom marker icon for pickup location
-                  const pickupIcon = L.icon({
-                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                    iconSize: [25, 41],
-                    iconAnchor: [12, 41],
-                    popupAnchor: [1, -34],
-                    shadowSize: [41, 41]
-                  });
-
-                  L.marker([pickupLat, pickupLng], { icon: pickupIcon }).addTo(map);
-
-                  if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(position => {
-                      const userLat = position.coords.latitude;
-                      const userLng = position.coords.longitude;
-
-                      // Custom marker icon for user location
-                      const userIcon = L.icon({
-                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-                        iconSize: [25, 41],
-                        iconAnchor: [12, 41],
-                        popupAnchor: [1, -34],
-                        shadowSize: [41, 41]
-                      });
-
-                      L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
-                      L.polyline([[userLat, userLng], [pickupLat, pickupLng]], { color: 'blue' }).addTo(map);
-                      const distance = map.distance([userLat, userLng], [pickupLat, pickupLng]) / 1609.34;
-                      document.getElementById("distance-info").innerText = `Distance to pickup: ${distance.toFixed(2)} miles`;
-                    }, () => {
-                      alert("Unable to access your location.");
-                    });
-                  }
-                </script>
+                <p class="card-text">
+                  <strong>Location:</strong> <?= htmlspecialchars($formatted_address) ?><br>
+                  <strong>Available:</strong> <?= date('F j, Y g:i A', strtotime($meal['pickup_time'])) ?> -
+                  <?= date('g:i A', strtotime($meal['pickup_end_time'])) ?>
+                </p>
+                <div id="map" style="height: 300px;" class="mt-3"></div>
+                <?php if (isset($_SESSION["user_lat"]) && isset($_SESSION["user_lng"])): ?>
+                  <div id="distance-info" class="mt-2 text-muted"></div>
+                <?php endif; ?>
               </div>
             </div>
           <?php else: ?>
@@ -238,6 +200,77 @@ if ($pickupLat != 0 && $pickupLng != 0) {
       </div>
     </div>
   </div>
+
+  <script>
+    <?php if ($canViewPickup): ?>
+      // Initialize map
+      const map = L.map('map').setView([<?= $pickupLat ?>, <?= $pickupLng ?>], 14);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      // Add marker for pickup location
+      const pickupIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+
+      const marker = L.marker([<?= $pickupLat ?>, <?= $pickupLng ?>], { icon: pickupIcon }).addTo(map);
+      marker.bindPopup("Pickup Location").openPopup();
+
+      <?php if (isset($_SESSION["user_lat"]) && isset($_SESSION["user_lng"])): ?>
+        // Add marker for user's location
+        const userIcon = L.icon({
+          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+
+        const userMarker = L.marker([<?= $_SESSION["user_lat"] ?>, <?= $_SESSION["user_lng"] ?>], { icon: userIcon }).addTo(map);
+        userMarker.bindPopup("Your Location").openPopup();
+
+        // Add line between user and pickup location
+        const line = L.polyline([
+          [<?= $_SESSION["user_lat"] ?>, <?= $_SESSION["user_lng"] ?>],
+          [<?= $pickupLat ?>, <?= $pickupLng ?>]
+        ], {
+          color: 'blue',
+          weight: 3,
+          opacity: 0.7,
+          dashArray: '10, 10'
+        }).addTo(map);
+
+        // Calculate and display distance
+        const distance = calculateDistance(
+          <?= $_SESSION["user_lat"] ?>,
+          <?= $_SESSION["user_lng"] ?>,
+          <?= $pickupLat ?>,
+          <?= $pickupLng ?>
+        );
+        document.getElementById('distance-info').innerHTML = `Distance from your location: ${distance.toFixed(1)} miles`;
+
+        // Function to calculate distance between two points
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+          const R = 3958.8; // Earth's radius in miles
+          const dLat = (lat2 - lat1) * Math.PI / 180;
+          const dLon = (lon2 - lon1) * Math.PI / 180;
+          const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          return R * c;
+        }
+      <?php endif; ?>
+    <?php endif; ?>
+  </script>
 
 </body>
 

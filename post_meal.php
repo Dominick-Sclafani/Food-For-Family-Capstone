@@ -65,49 +65,57 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
     $pickup_time = trim($_POST["pickup_time"] ?? date("Y-m-d H:i:s"));
+    $pickup_end_time = trim($_POST["pickup_end_time"] ?? date("Y-m-d H:i:s"));
     $price = trim($_POST["price"] ?? "0.00");
 
-    $image_filename = null;
+    // Validate pickup times
+    if (strtotime($pickup_end_time) <= strtotime($pickup_time)) {
+        $_SESSION['error'] = "End time must be after start time";
+        header("Location: post_meal.php");
+        exit();
+    }
 
-    //  Handle image upload if present
-    if (!empty($_FILES["meal_image"]["name"])) {
-        $target_dir = "uploads/";
-        if (!file_exists($target_dir)) {
-            mkdir($target_dir, 0777, true);
-        }
+    $image = null;
 
-        $image_filename = time() . "_" . basename($_FILES["meal_image"]["name"]);
-        $target_file = $target_dir . $image_filename;
-        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-        $allowed_types = ["jpg", "jpeg", "png", "gif"];
+    // Handle image upload
+    if (isset($_FILES['meal_image']) && $_FILES['meal_image']['error'] == 0) {
+        $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+        $filename = $_FILES['meal_image']['name'];
+        $filetype = pathinfo($filename, PATHINFO_EXTENSION);
 
-        if (!in_array($imageFileType, $allowed_types)) {
-            $_SESSION["error"] = "Only JPG, JPEG, PNG, and GIF files are allowed.";
-            header("Location: index.php");
-            exit;
-        }
+        if (in_array(strtolower($filetype), $allowed)) {
+            $new_filename = uniqid() . '.' . $filetype;
+            $upload_path = 'uploads/' . $new_filename;
 
-        if ($_FILES["meal_image"]["size"] > 5000000) {
-            $_SESSION["error"] = "Image size too large (Max: 5MB).";
-            header("Location: index.php");
-            exit;
-        }
+            // Create uploads directory if it doesn't exist
+            if (!file_exists('uploads')) {
+                mkdir('uploads', 0777, true);
+            }
 
-        if (!move_uploaded_file($_FILES["meal_image"]["tmp_name"], $target_file)) {
-            $_SESSION["error"] = "Failed to upload image.";
-            header("Location: index.php");
-            exit;
+            if (move_uploaded_file($_FILES['meal_image']['tmp_name'], $upload_path)) {
+                $image = $new_filename; // Store only the filename
+            } else {
+                $_SESSION['error'] = "Failed to upload image. Please try again.";
+                header("Location: post_meal.php");
+                exit();
+            }
+        } else {
+            $_SESSION['error'] = "Invalid file type. Please upload a JPG, JPEG, PNG, or GIF image.";
+            header("Location: post_meal.php");
+            exit();
         }
     }
 
-    $stmt = $conn->prepare("INSERT INTO meals (user_id, username, title, description, ingredients, allergies, pickup_location, pickup_time, price, image) 
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("isssssssss", $user_id, $username, $title, $description, $ingredients, $allergies, $pickup_location, $pickup_time, $price, $image_filename);
+    // Insert meal into database
+    $stmt = $conn->prepare("INSERT INTO meals (user_id, title, description, ingredients, allergies, pickup_location, pickup_time, pickup_end_time, image, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("issssssssd", $user_id, $title, $description, $ingredients, $allergies, $pickup_location, $pickup_time, $pickup_end_time, $image, $price);
 
     if ($stmt->execute()) {
-        $_SESSION["success"] = "Meal posted successfully!";
+        $_SESSION['success'] = "Meal posted successfully!";
+        header("Location: index.php");
+        exit();
     } else {
-        $_SESSION["error"] = "Failed to post meal. Error: " . $stmt->error;
+        $_SESSION['error'] = "Error posting meal: " . $conn->error;
     }
 
     $stmt->close();
