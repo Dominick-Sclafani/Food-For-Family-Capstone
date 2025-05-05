@@ -8,6 +8,11 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="about.php">About Us</a>
+        </li>
+      </ul>
       <ul class="navbar-nav ms-auto">
         <?php if (isset($_SESSION["username"])): ?>
           <li class="nav-item dropdown">
