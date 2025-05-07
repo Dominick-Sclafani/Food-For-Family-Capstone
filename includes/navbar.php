@@ -9,8 +9,16 @@
 
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
+
         <li class="nav-item">
           <a class="nav-link" href="about.php">About Us</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link"
+            href="https://docs.google.com/document/d/1csMA7k5H8iNQG-ilORN96KE6E-unLJom_9hlTij3W84/edit?usp=sharing"
+            target="_blank">
+            <i class="fas fa-file-alt"></i>
+          </a>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">
