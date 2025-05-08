@@ -26,18 +26,6 @@
                     <?php include('includes/post_meal_form.php'); ?>
                 <?php endif; ?>
 
-                <?php
-                // Get all meals with user information
-                $meals_query = "
-                    SELECT m.*, u.username, u.verification_status,
-                    (SELECT COUNT(*) FROM purchases WHERE meal_id = m.id) as purchase_count,
-                    (SELECT AVG(rating) FROM reviews r WHERE r.chef_id = m.user_id) as avg_rating
-                    FROM meals m
-                    JOIN users u ON m.user_id = u.id
-                    WHERE m.pickup_end_time > CONVERT_TZ(NOW(), 'SYSTEM', '+00:00')
-                    AND m.pickup_end_time > m.pickup_time
-                    ORDER BY m.timestamp DESC";
-                ?>
 
                 <?php include('includes/meals_list.php'); ?>
             <?php endif; ?>
